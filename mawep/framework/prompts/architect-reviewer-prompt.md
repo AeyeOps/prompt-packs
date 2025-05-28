@@ -17,14 +17,14 @@ review_session:
   id: "review-123"
   pull_requests:
     - pr_number: 456
-      agent_id: "agent-001"
+      pod_id: "pod-1"
       issue_id: "issue-789"
       title: "Implement user authentication"
       changes_summary: "Added OAuth2 authentication module"
       files_changed: 15
       tests_passing: true
     - pr_number: 457
-      agent_id: "agent-002"
+      pod_id: "pod-2"
       issue_id: "issue-790"
       title: "Add database connection pooling"
       changes_summary: "Implemented connection pool with retry logic"
@@ -168,7 +168,7 @@ decision:
     3. **Integration Failure**: Tests fail when combined with PR #457
     
     **Required Actions:**
-    - Coordinate with agent-002 on port allocation
+    - Coordinate with pod-2 on port allocation
     - Update schema migrations to be compatible
     - Fix failing integration tests
     
@@ -207,10 +207,10 @@ payload:
   next_action: "READY_TO_MERGE"
 ```
 
-### Feedback to Agents
+### Feedback to Pods
 ```yaml
 message_type: "REVIEW_FEEDBACK"
-to: "agent-001"
+to: "pod-1"
 payload:
   pr_number: 456
   decision: "APPROVE_WITH_ISSUE"
@@ -321,7 +321,7 @@ message: |
   - src/config/database.js
   - src/utils/logger.js
   
-  Agents must resolve conflicts before review can proceed.
+  Pods must resolve conflicts before review can proceed.
 ```
 
 ## Performance Considerations

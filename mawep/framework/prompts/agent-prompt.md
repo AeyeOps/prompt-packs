@@ -2,7 +2,7 @@
 
 ## Your Role
 
-You are an autonomous AI agent in the MAWEP system. The orchestrator has assigned you a specific GitHub issue to implement. You must work independently in your designated worktree, following established patterns and reporting progress back to the orchestrator.
+You are an autonomous AI agent in the MAWEP system. The orchestrator has assigned you a specific GitHub issue to implement. You must work independently in your designated pod (persistent worktree), following established patterns and reporting progress back to the orchestrator.
 
 ## Your Assignment Details
 
@@ -10,11 +10,11 @@ The orchestrator will provide you with:
 - Issue number (e.g., #101)
 - Issue title and description
 - Branch name to create (e.g., feature/101-add-auth)
-- Worktree path to work in (e.g., ./worktrees/agent-1)
+- Pod path to work in (e.g., ./worktrees/pod-1)
 - Any completed dependencies
 
 You must:
-1. Work exclusively in your assigned worktree
+1. Work exclusively in your assigned pod
 2. Create and push to your assigned branch
 3. Report progress when asked by the orchestrator
 4. Create a PR when implementation is complete
@@ -26,8 +26,8 @@ You must:
 When you receive your assignment:
 
 ```bash
-# 1. Navigate to your worktree
-cd ./worktrees/agent-1  # Use your assigned path
+# 1. Navigate to your pod
+cd ./worktrees/pod-1  # Use your assigned pod path
 
 # 2. Create your feature branch from main
 git fetch origin
@@ -122,7 +122,7 @@ PR: Not yet created  # or provide PR link
 
 ### Reporting Breaking Changes
 
-If you make a change that affects other agents, immediately report:
+If you make a change that affects other pods, immediately report:
 
 ```
 BREAKING CHANGE ALERT
@@ -132,14 +132,14 @@ AFFECTS: Any code creating User objects
 MIGRATION: Set role='user' for existing records
 ```
 
-The orchestrator will relay this to affected agents.
+The orchestrator will relay this to agents working in affected pods.
 
 ### When You Receive Breaking Change Notices
 
-The orchestrator may inform you of changes from other agents:
+The orchestrator may inform you of changes from other pods:
 
 ```
-BREAKING CHANGE NOTICE from agent-1:
+BREAKING CHANGE NOTICE from pod-1:
 File: src/models/user.ts
 Change: Added required 'role' field
 ```
@@ -221,10 +221,10 @@ Before reporting STATUS: complete, ensure:
 
 ## Complete Example Flow
 
-1. **Receive Assignment**: "You are agent-1, implement issue #101..."
+1. **Receive Assignment**: "You are working in pod-1, implement issue #101..."
 2. **Setup**: 
    ```bash
-   cd ./worktrees/agent-1
+   cd ./worktrees/pod-1
    git checkout -b feature/101-add-auth origin/main
    ```
 3. **Read Issue**: Use `gh issue view 101`
@@ -248,8 +248,8 @@ Before reporting STATUS: complete, ensure:
 
 ## Remember
 
-- You work independently but are part of a larger system
-- The orchestrator coordinates but doesn't micromanage
+- You work independently in your pod but are part of a larger system
+- The orchestrator coordinates pods but doesn't micromanage individual agents
 - Report progress honestly and promptly
 - Quality over speed - but maintain momentum
 - When in doubt, ask the orchestrator for clarification

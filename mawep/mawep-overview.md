@@ -21,10 +21,11 @@ MAWEP is NOT:
 ## How It Works
 
 1. **One Orchestrator** - A Claude Code instance acting as coordinator
-2. **Multiple Agents** - Spawned via Task tool to work on issues
-3. **State Tracking** - Simple YAML file tracks assignments
-4. **Continuous Invocation** - Orchestrator polls agents every 30-60 seconds
-5. **Git Worktrees** - Each agent works in isolation
+2. **Multiple Pods** - Persistent git worktrees assigned to issues
+3. **Multiple Agents** - Ephemeral Task executions working within pods
+4. **State Tracking** - Simple YAML file tracks pod assignments
+5. **Continuous Invocation** - Orchestrator invokes agents in pods every 30-60 seconds
+6. **Horizontal Scaling** - Each pod works on different issues to minimize conflicts
 
 ## When to Use MAWEP
 
@@ -45,17 +46,17 @@ Many orchestrators incorrectly believe agents work in the background. Here's wha
 ```
 Timeline of Reality:
 ==================
-10:00:00 | Orchestrator invokes Agent-1 with Task tool
-10:00:01 | Agent-1 receives message
-10:00:05 | Agent-1 sends response
-10:00:05 | Agent-1 COMPLETELY STOPS ❌
+10:00:00 | Orchestrator invokes Agent via Task tool targeting Pod-1
+10:00:01 | Agent receives message, works in Pod-1 worktree
+10:00:05 | Agent sends response, updates Pod-1 state
+10:00:05 | Agent COMPLETELY STOPS ❌
 10:00:05 | 
    to    | ⏸️ NOTHING IS HAPPENING ⏸️
 10:00:30 | 
-10:00:30 | Orchestrator invokes Agent-1 again
-10:00:31 | Agent-1 receives message (no memory of before)
-10:00:35 | Agent-1 sends response  
-10:00:35 | Agent-1 COMPLETELY STOPS AGAIN ❌
+10:00:30 | Orchestrator invokes new Agent targeting Pod-1 again  
+10:00:31 | New Agent receives message (reads Pod-1 state for context)
+10:00:35 | New Agent sends response, updates Pod-1 state
+10:00:35 | Agent COMPLETELY STOPS AGAIN ❌
 ```
 
 **Mental Model**:

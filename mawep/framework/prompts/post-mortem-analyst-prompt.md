@@ -31,12 +31,12 @@ timeline:
     event: "ARCHITECTURAL_ANALYSIS"
     details: "Foundation work identified, issue #106 created"
   - timestamp: "2024-01-15T09:30:00Z"
-    event: "AGENT_ASSIGNED"
-    details: "agent-001 assigned to issue #106 (foundation)"
+    event: "POD_ASSIGNED"
+    details: "pod-1 assigned to issue #106 (foundation)"
   # ... more events
 
-agent_metrics:
-  agent-001:
+pod_metrics:
+  pod-1:
     issues_assigned: 2
     issues_completed: 2
     time_active_minutes: 180
@@ -44,7 +44,7 @@ agent_metrics:
     commits_made: 15
     tests_written: 23
     iterations: 4
-  agent-002:
+  pod-2:
     issues_assigned: 2
     issues_completed: 1
     time_active_minutes: 240
@@ -55,7 +55,7 @@ agent_metrics:
     failure_reason: "Integration test failures"
 
 communication_log:
-  inter_agent_messages: 12
+  inter_pod_messages: 12
   breaking_changes_announced: 3
   status_updates: 48
   blockers_reported: 2
@@ -71,7 +71,7 @@ review_outcomes:
 
 errors_and_failures:
   - type: "TEST_FAILURE"
-    agent: "agent-002"
+    pod: "pod-2"
     issue: 104
     description: "Unit tests failed after merge"
     resolution: "Manual intervention required"
@@ -110,13 +110,13 @@ def analyze_timeline():
     return phases, gaps
 ```
 
-### Phase 2: Agent Performance Analysis
+### Phase 2: Pod Performance Analysis
 
 ```python
-def analyze_agent_performance():
+def analyze_pod_performance():
     metrics = {}
-    for agent_id, data in agent_metrics.items():
-        metrics[agent_id] = {
+    for pod_id, data in pod_metrics.items():
+        metrics[pod_id] = {
             "efficiency": data.time_active / (data.time_active + data.time_idle),
             "velocity": data.issues_completed / data.time_active * 60,
             "quality": 1 - (data.rework_required / data.commits_made),
@@ -126,7 +126,7 @@ def analyze_agent_performance():
     
     # Identify outliers
     avg_efficiency = mean([m.efficiency for m in metrics.values()])
-    outliers = [a for a, m in metrics.items() 
+    outliers = [p for p, m in metrics.items() 
                 if abs(m.efficiency - avg_efficiency) > 0.3]
     
     return metrics, outliers
@@ -139,12 +139,12 @@ FAILURE ANALYSIS CHECKLIST:
 □ What types of failures occurred most?
 □ Were failures predictable from initial analysis?
 □ Did architectural analysis miss dependencies?
-□ Were there common failure patterns across agents?
+□ Were there common failure patterns across pods?
 □ Could better foundation work have prevented failures?
 
 COMMUNICATION ANALYSIS:
 □ Were breaking changes communicated promptly?
-□ Did agents respond to change notifications?
+□ Did pods respond to change notifications?
 □ Were there unnecessary communication events?
 □ Did lack of communication cause failures?
 □ Were status updates actionable?
@@ -165,7 +165,7 @@ For each significant event, create a learning:
 learning_template:
   id: "L-2024-01-15-001"
   category: "ARCHITECTURAL_ANALYSIS"
-  situation: "Two agents modified authentication simultaneously"
+  situation: "Two pods modified authentication simultaneously"
   outcome: "Merge conflicts and inconsistent patterns"
   root_cause: "Hidden dependency not identified in analysis"
   learning: "Authentication modifications should trigger foundation work"
@@ -188,14 +188,14 @@ learning_template:
 - **Workflow ID**: workflow-2024-01-15-001
 - **Duration**: 8 hours
 - **Success Rate**: 80% (4/5 issues completed)
-- **Efficiency**: 45% (agents active 45% of time)
+- **Efficiency**: 45% (pods active 45% of time)
 
 ## Key Metrics
 
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
 | Issues Completed | 4/5 | 5/5 | ⚠️ |
-| Agent Utilization | 45% | 70% | ❌ |
+| Pod Utilization | 45% | 70% | ❌ |
 | First-Time Success | 3/4 | 4/4 | ⚠️ |
 | Review Iterations | 2 | 1 | ⚠️ |
 | Communication Events | 63 | <50 | ❌ |
@@ -208,7 +208,7 @@ learning_template:
    - Foundation work correctly identified
 
 2. **Development** (6 hours) ⚠️
-   - Agent-002 struggled with integration tests
+   - Pod-2 struggled with integration tests
    - 2-hour gap while waiting for foundation work
    - Excessive iterations on issue #104
 
@@ -225,15 +225,15 @@ The workflow was bottlenecked by:
 2. Integration test failures (1.5 hours)
 3. Review rework (1 hour)
 
-## Agent Performance
+## Pod Performance
 
-### Agent-001 (Senior)
+### Pod-1 (Senior Level Work)
 - **Efficiency**: 38% (below target)
 - **Issues**: 2/2 completed ✅
 - **Quality**: High (no rework needed)
 - **Recommendation**: Assign more complex tasks
 
-### Agent-002 (Junior)
+### Pod-2 (Junior Level Work)
 - **Efficiency**: 50% (improving)
 - **Issues**: 1/2 completed ⚠️
 - **Quality**: Medium (1 rejection)
@@ -259,7 +259,7 @@ The workflow was bottlenecked by:
 **Priority**: HIGH
 
 ### L2: Integration Test Coverage
-**Learning**: Agents need to run integration tests before marking complete
+**Learning**: Pods need to run integration tests before marking complete
 **Action**: Add integration test requirement to agent prompt
 **Priority**: HIGH
 
@@ -289,7 +289,7 @@ The workflow was bottlenecked by:
 ### Process Improvements
 1. **Parallel Foundation Work**
    - Split foundation into independent parts
-   - Assign to multiple agents when possible
+   - Assign to multiple pods when possible
 
 2. **Predictive Conflict Detection**
    - Analyze file overlap before assignment
@@ -304,7 +304,7 @@ The workflow was bottlenecked by:
 Going forward, monitor:
 - Time to first commit (target: <30 min)
 - Integration test pass rate (target: >90%)
-- Agent idle time (target: <30%)
+- Pod idle time (target: <30%)
 - Rework rate (target: <10%)
 - Communication efficiency (target: <10 messages/issue)
 
@@ -324,7 +324,7 @@ Store learnings for future reference:
 learnings_database:
   - id: "L-2024-01-15-001"
     tags: ["architecture", "authentication", "parallel-work"]
-    pattern: "Multiple agents modifying authentication"
+    pattern: "Multiple pods modifying authentication"
     outcome: "conflict"
     prevention: "Sequential work or foundation pattern"
     frequency: 3  # seen 3 times
@@ -332,7 +332,7 @@ learnings_database:
     
   - id: "L-2024-01-15-002"
     tags: ["testing", "integration", "completion"]
-    pattern: "Agent marks complete without integration tests"
+    pattern: "Pod marks complete without integration tests"
     outcome: "failure in review"
     prevention: "Explicit test requirements in prompt"
     frequency: 5
