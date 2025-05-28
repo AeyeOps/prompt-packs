@@ -108,11 +108,43 @@ Follow the orchestrator instructions in orchestrator-prompt.md
 - Feature development with independent components
 - Any scenario requiring parallel development
 
-## Installation
+## Installation & Setup 🚀
+
+### "Where we're going, we don't need roads!" - But we do need imports!
 
 1. Clone this repository
 2. Each pack is self-contained in its directory
-3. Reference the specific prompt files when invoking Claude Code
+3. Add the pack reference to your CLAUDE.md file (global or project)
+
+### Import Reference Tree
+
+Here's how the MAWEP documents reference each other (it's like a choose-your-own-adventure book!):
+
+```
+📁 ~/.claude/CLAUDE.md (Global)
+│   └── @~/.claude/docs/prompt-packs/mawep/CLAUDE.md
+│
+📁 /your-project/CLAUDE.md (Project-specific)
+│   └── @~/.claude/docs/prompt-packs/mawep/CLAUDE.md
+│
+📁 mawep/CLAUDE.md
+    ├── @orchestrator-prompt.md
+    ├── @agent-prompt.md
+    ├── @technical-reviewer-prompt.md
+    ├── @architect-reviewer-prompt.md
+    └── @post-mortem-analyst-prompt.md
+```
+
+### The Magic Line ✨
+
+Add this line to your global or project CLAUDE.md to enable MAWEP:
+
+```markdown
+## Multi-Agent Workflows (MAWEP)
+For multi-agent parallel development workflows, see: @~/.claude/docs/prompt-packs/mawep/CLAUDE.md
+```
+
+**Don't forget the @ symbol!** It's like the flux capacitor - without it, nothing works!
 
 ## Repository Structure
 
