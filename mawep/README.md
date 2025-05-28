@@ -2,13 +2,13 @@
 
 **M**ulti-**A**gent **W**orkflow **E**xecution **P**rocess - Like having a killer development crew that doesn't step on each other's code! 
 
-*Coordinate multiple AI agents working on GitHub issues in parallel while keeping your sanity intact.*
+*Coordinate agents working in persistent pod workspaces on GitHub issues in parallel while keeping your sanity intact.*
 
 ---
 
 ## 🚀 What's This All About?
 
-Ever wanted to split up a big development sprint and have multiple AI agents tackle different pieces simultaneously? MAWEP makes it happen without the chaos. Think of it as **your project's mission control** - one orchestrator keeping everyone in sync while agents work in their own isolated zones.
+Ever wanted to split up a big development sprint and have multiple AI agents tackle different pieces simultaneously? MAWEP makes it happen without the chaos. Think of it as **your project's mission control** - one orchestrator invokes agents who work in dedicated pods (persistent git worktrees) so they never lose context or step on each other.
 
 **Perfect for:**
 - 🔥 Sprint work with 3-10 independent issues
@@ -24,33 +24,46 @@ Ever wanted to split up a big development sprint and have multiple AI agents tac
 - ✅ Perfect when you have clear issue separation  
 - ❌ Overkill for single issues or quick fixes
 
-## 🎮 How It Works (The Basics)
+## 🎮 How It Works (The Flow)
 
-### The Power Structure
+### The Complete Architecture
 ```
-┌─────────────────┐    "Yo pods, status report!"
-│   Orchestrator  │ ──────────────────────────┐
-│  (The Director) │                            │
-└─────────────────┘                            │
-        │                                      ▼
-        │              ┌─────────────┐   ┌─────────────┐
-        │              │    Pod-1    │   │    Pod-2    │  
-        │              │(Issue #101) │   │(Issue #102) │
-        │              └─────────────┘   └─────────────┘
-        ▼                     │                 │
-┌─────────────────┐          │                 │
-│ mawep-state.yaml│          ▼                 ▼
-│  (The Truth)    │   ┌─────────────┐   ┌─────────────┐
-└─────────────────┘   │ Git Worktree│   │ Git Worktree│
-                      └─────────────┘   └─────────────┘
+                    ┌─────────────────┐
+                    │   Orchestrator  │ ← You manage this
+                    │  (Your Control) │
+                    └─────────┬───────┘
+                              │
+                   "Invoke agent for pod-1"
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────┐
+│                    Agent Invocation                     │ ← Ephemeral
+│  "Work on pod-1, check memory-bank, update progress"   │   (Claude Task)
+└──────────────────────┬──────────────────────────────────┘
+                       │
+            Agent works in persistent pod
+                       │
+                       ▼
+    ┌─────────────────────────────────────────────┐
+    │               Pod-1 Workspace               │ ← Persistent
+    │         (Git Worktree + Memory Bank)        │   (Survives)
+    │                                             │
+    │  📁 mawep-workspace/worktrees/pod-1/        │
+    │  ├── [your project files]                  │
+    │  ├── memory-bank/                          │
+    │  │   ├── activeContext.md                  │
+    │  │   ├── progress.md                       │
+    │  │   └── blockers.md                       │
+    │  └── .git/ (worktree branch: pod-1-issue-101) │
+    └─────────────────────────────────────────────┘
 ```
 
 ### Key Terminology (No Confusion Zone!)
-- **🎭 Agent**: Ephemeral Task tool execution (single message → response → *poof* gone)
-- **🏠 Pod**: Persistent git worktree where agents work over time (like `pod-1`, `pod-2`)
-- **🎯 Orchestrator**: The conductor keeping everything in sync
+- **🎭 Agent**: Ephemeral Claude Task execution (single message → response → *poof* gone)
+- **🏠 Pod**: Persistent git worktree + memory bank where agents work over time
+- **🎯 Orchestrator**: You - the conductor invoking agents and tracking state
 
-**Critical Reality**: Agents are like phone calls - they start, do one thing, then hang up. Pods are like offices - they persist and hold the work.
+**Critical Reality**: Agents are like phone calls - they start, do one thing, then hang up. Pods are like offices - they persist and hold all the work context.
 
 ## 🛠️ Getting Started (Your First Mission)
 
@@ -74,91 +87,198 @@ The orchestrator will:
 
 ### Step 3: Watch the Magic (But Stay Involved!)
 - 📺 **Monitor progress**: Ask "Show status" anytime
-- 🔄 **Keep it flowing**: Orchestrator handles continuous agent invocation
+- 🔄 **Keep it flowing**: Orchestrator handles continuous agent invocation for each pod
 - 🚨 **Handle blockers**: Jump in when pods report issues
 
-## 📁 What You'll See in Your Project
+---
+
+## 🔧 Git Worktree Deep Dive (The Technical Stuff)
+
+Now that you know WHY, here's HOW it actually works under the hood.
+
+### Pod Creation (What MAWEP Does Automatically)
+```bash
+# For each pod, MAWEP runs:
+git worktree add mawep-workspace/worktrees/pod-1 -b pod-1-issue-101
+git worktree add mawep-workspace/worktrees/pod-2 -b pod-2-issue-102
+git worktree add mawep-workspace/worktrees/pod-3 -b pod-3-issue-103
+
+# Creates isolated working directories:
+your-project/
+├── mawep-workspace/
+│   └── worktrees/
+│       ├── pod-1/    ← Complete project copy on branch pod-1-issue-101
+│       ├── pod-2/    ← Complete project copy on branch pod-2-issue-102
+│       └── pod-3/    ← Complete project copy on branch pod-3-issue-103
+└── [main project files]  ← Your original main branch
+```
+
+### Pod Management Commands (For Manual Control)
+```bash
+# Check all active pods
+git worktree list
+
+# Example output:
+# /opt/project                     deadbeef [main]
+# /opt/project/mawep-workspace/worktrees/pod-1  abcd1234 [pod-1-issue-101]
+# /opt/project/mawep-workspace/worktrees/pod-2  efgh5678 [pod-2-issue-102]
+
+# Remove completed pod (after merging PR)
+git worktree remove mawep-workspace/worktrees/pod-1
+git branch -d pod-1-issue-101
+
+# Move pod location (if needed)
+git worktree move mawep-workspace/worktrees/pod-1 ../backup/
+
+# Repair corrupted pod
+git worktree repair mawep-workspace/worktrees/pod-1
+```
+
+### Understanding Pod Isolation
+Each pod is a **complete, independent copy** of your project:
+
+```bash
+# Pod-1 can have different files than Pod-2:
+pod-1/src/auth.ts     ← Working on auth refactor
+pod-2/src/auth.ts     ← Original version (different branch)
+
+# Changes don't affect each other until merge time
+cd mawep-workspace/worktrees/pod-1
+git status  # Shows only pod-1 changes
+
+cd ../pod-2  
+git status  # Shows only pod-2 changes
+```
+
+### Memory Bank Pattern (Context Persistence)
+```
+pod-1/memory-bank/
+├── activeContext.md    # "Working on extracting logging module from __main__.py"
+├── progress.md         # "✅ Extracted constants.py ⏳ Working on utils/helpers.py"
+├── blockers.md         # "Need clarification on error handling patterns"
+└── systemPatterns.md   # "This codebase uses typer for CLI, pathlib for paths"
+```
+
+**Why This Matters**: When you invoke an agent for pod-1 tomorrow, it reads these files and knows exactly where it left off!
+
+---
+
+## 📁 Complete Project Structure
 
 ```
 your-project/
-├── mawep-workspace/           # ← MAWEP's mission control
-│   ├── mawep-state.yaml      # Current status of all pods/issues
-│   ├── sprint-assignments.md  # What's assigned to whom
-│   └── worktrees/            # Isolated workspaces
-│       ├── pod-1/            # Working on issue #101
-│       ├── pod-2/            # Working on issue #102
-│       └── pod-3/            # Working on issue #103
-└── [your regular project files]
+├── mawep-workspace/              # ← MAWEP's mission control
+│   ├── mawep-state.yaml         # Pod assignments and status
+│   ├── sprint-2-assignments.md   # Human-readable assignments
+│   └── worktrees/               # Isolated development pods
+│       ├── pod-1/               # Git worktree for issue #101
+│       │   ├── [full project]   # Complete project copy
+│       │   └── memory-bank/     # Agent context files
+│       ├── pod-2/               # Git worktree for issue #102
+│       │   ├── [full project]   # Complete project copy  
+│       │   └── memory-bank/     # Agent context files
+│       └── pod-3/               # Git worktree for issue #103
+└── [your regular project files] # Main branch (untouched during work)
 ```
 
 ## 🎯 Success Patterns
 
-### 💾 Memory Bank Pattern
-Each pod maintains context between agent visits:
+### 📢 Pod Status Communication
+When agents work in pods, they report in this format:
 ```
-pod-1/memory-bank/
-├── activeContext.md    # What am I working on?
-├── progress.md         # What's done/what's next?
-└── blockers.md         # What's stopping me?
-```
-
-### 📢 Status Communication
-Pods report in this format:
-```
-STATUS: working|complete|blocked
-PROGRESS: Extracted logging module, added tests
+STATUS: working|complete|blocked|needs-review
+PROGRESS: Extracted logging module, added tests, created PR #205
 BLOCKERS: None
-NEXT: Creating PR and running integration tests
+NEXT: Waiting for PR review, then working on config module
 ```
 
 ### 🔔 Breaking Change Alerts
 When one pod changes something others need:
 ```
 🚨 BREAKING CHANGE ALERT
-FILE: src/auth/types.ts
+POD: pod-1
+FILE: src/auth/types.ts  
 CHANGE: Added required 'role' field to User interface
 AFFECTS: Any code creating User objects
 MIGRATION: Set role='user' for existing records
+```
+
+### 🔄 Pod Lifecycle Management
+```bash
+# Typical pod lifecycle:
+1. git worktree add worktrees/pod-1 -b pod-1-issue-101
+2. Agent works in pod-1/ over multiple invocations
+3. Agent creates PR from pod-1-issue-101 → main
+4. PR gets reviewed and merged
+5. git worktree remove worktrees/pod-1
+6. git branch -d pod-1-issue-101
 ```
 
 ## 🎸 Advanced Moves
 
 ### Coordination Branch Pattern
 For shared interfaces and breaking changes:
-- Create `.mawep/` directory on a coordination branch
-- Store shared type definitions and interfaces
-- Pods reference this for contracts
+```bash
+# Create coordination branch with shared contracts
+git checkout -b mawep-coordination
+mkdir .mawep
+echo "export interface User { id: string; role: string; }" > .mawep/types.ts
+git add .mawep/ && git commit -m "Add shared type contracts"
 
-### Custom Agent Instructions
-Tailor agent behavior per project:
-- Add project-specific patterns to agent prompts
-- Include testing requirements and code style
-- Set up specialized review processes
+# Pods can reference this for consistency
+# pod-1: import { User } from '../../../.mawep/types.ts'
+```
+
+### Pod Recovery Strategies
+```bash
+# Pod got corrupted or confused?
+git worktree remove worktrees/pod-1      # Remove the workspace
+git branch -D pod-1-issue-101            # Delete the branch  
+git worktree add worktrees/pod-1 -b pod-1-issue-101  # Start fresh
+# Agent reads memory-bank/ to restore context
+```
+
+### Performance Considerations
+- **Each pod**: ~100-200MB (full project copy)
+- **Recommended max**: 5-7 active pods (disk space)
+- **Network**: Each pod can `git push` independently
+- **IDE**: Open multiple VS Code windows, one per pod
 
 ## 🚫 What Not To Do (Learn from Others' Pain)
 
-❌ **Don't assume agents work in background** - They freeze after each response  
-❌ **Don't have pods modify each other's code** - Stay in your lane!  
-❌ **Don't skip the memory bank** - Agents have amnesia between calls  
-❌ **Don't ignore blockers** - Escalate immediately  
+❌ **Don't assume agents work continuously** - They stop after each response  
+❌ **Don't have pods modify each other's files** - Stay in your lane!  
+❌ **Don't skip the memory bank** - Agents have amnesia between invocations  
+❌ **Don't ignore blockers** - Escalate to orchestrator immediately  
 ❌ **Don't use for tightly coupled work** - Sequential is sometimes better  
+❌ **Don't forget to clean up** - Remove completed pods to save disk space
 
 ## 🔍 When Things Go Sideways
 
 ### Pod Stuck or Confused?
-1. Check the pod's memory bank for context
-2. Look at recent git commits for progress
-3. Re-invoke with clearer instructions
-4. Consider reassigning the issue
+```bash
+# Debug checklist:
+1. cd mawep-workspace/worktrees/pod-1
+2. cat memory-bank/activeContext.md     # What was it working on?
+3. git log --oneline -n 5               # What did it accomplish?
+4. git status                           # What's uncommitted?
+5. Re-invoke agent with clearer context
+```
 
 ### Integration Conflicts?
-1. Pause affected pods
-2. Coordinate the fix manually
-3. Use breaking change alerts
-4. Resume once resolved
+```bash
+# Conflict resolution:
+1. Pause affected pods (update mawep-state.yaml)
+2. cd worktrees/pod-1 && git fetch origin main
+3. git merge origin/main  # Resolve conflicts manually
+4. Update memory-bank/blockers.md
+5. Resume pod work
+```
 
 ### Lost Track of Everything?
-Check `mawep-state.yaml` - it's the source of truth for all pod/issue assignments.
+- Check `mawep-state.yaml` - source of truth for all assignments
+- Run `git worktree list` - see all active pods
+- Look at each `pod-N/memory-bank/progress.md` for status
 
 ## 🎊 Ready to Rock?
 
@@ -170,8 +290,15 @@ MAWEP works best when you:
 
 **Start small**, get comfortable with 2-3 pods, then scale up as you learn the rhythm!
 
+### Quick Start Checklist
+- [ ] 3+ independent GitHub issues ready
+- [ ] Clean main branch (no uncommitted changes)
+- [ ] ~1GB free disk space (for pod worktrees)
+- [ ] Claude Code session ready
+- [ ] Tell Claude: "Act as MAWEP Orchestrator..."
+
 ---
 
 *Like a well-oiled 80s synth setup - each track (pod) plays its part while the producer (orchestrator) keeps the whole album (project) in perfect harmony.* 🎵✨
 
-**Need more details?** Check out the complete framework documentation in the prompt pack - everything from orchestrator instructions to post-mortem analysis patterns!
+**Need the complete prompt library?** This README just scratches the surface - check out the full framework documentation for orchestrator prompts, agent instructions, post-mortem analysis patterns, and advanced coordination strategies!
