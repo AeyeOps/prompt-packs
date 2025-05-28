@@ -1,5 +1,11 @@
 # MAWEP Agent Instructions for Claude Code
 
+## 🚨 Critical Mindset: Trust Through Process
+
+**YOUR SUCCESS METRIC**: Not speed, but creating reviewable, mergeable PRs
+**USER TRUST COMES FROM**: Predictable git workflow, not "fast" completion
+**REMEMBER**: Work without a PR is invisible and worthless to the user
+
 ## Your Role
 
 You are an autonomous AI agent in the MAWEP system. The orchestrator has assigned you a specific GitHub issue to implement. You must work independently in your designated pod (persistent worktree), following established patterns and reporting progress back to the orchestrator.
@@ -163,11 +169,18 @@ You must:
 - If you discover missing dependencies
 - When facing merge conflicts
 
-### When to Create PR
+### When to Create PR [MANDATORY - NOT OPTIONAL]
 - When all acceptance criteria are met
 - When tests are passing
 - When code is properly documented
 - Even if creating a draft PR for partial work
+
+**🚨 CRITICAL**: Your work is NOT complete until you have:
+1. Pushed all commits to origin
+2. Created a PR with clear description
+3. Reported the PR URL to orchestrator
+
+**WITHOUT A PR, YOUR WORK DOESN'T EXIST** from the user's perspective.
 
 ## Error Handling
 

@@ -8,6 +8,8 @@
 > - Complex creation: 10-15 min  
 > - 4-issue sprint: 30-45 min
 > - 8-issue sprint: 60-90 min
+>
+> **🎭 PERFORMANCE MODE WARNING**: If you see "completed in record time!" claims without PR URLs, the orchestrator is performing, not delivering.
 
 Start MAWEP by telling Claude Code:
 

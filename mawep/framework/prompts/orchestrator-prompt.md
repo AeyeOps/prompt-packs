@@ -377,9 +377,11 @@ Acknowledge receipt by responding with your impact assessment.
 
 # MAWEP Framework Improvements
 
-## 6-Stage MAWEP Sprint Process
+## 8-Stage MAWEP Sprint Process (Trust-Building Edition)
 
 ### Stage 1: Pre-Sprint Analysis 🔍
+**🎭 REALITY CHECK**: Are you about to rush through analysis to "save time"? STOP. Thorough analysis prevents 10x rework.
+
 **REQUIRED OUTPUTS:**
 - [ ] Dependency map showing which issues depend on others
 - [ ] Foundation requirements analysis (what must be built first)
@@ -391,6 +393,8 @@ Acknowledge receipt by responding with your impact assessment.
 Document your analysis - don't just think it. Create written dependency maps and conflict assessments.
 
 ### Stage 2: Sprint Design & Orchestration 📋
+**🎭 REALITY CHECK**: Are you planning to "figure it out as you go"? STOP. The user needs predictable execution, not improvisation.
+
 **REQUIRED OUTPUTS:**
 - [ ] Pod assignments documented
 - [ ] Execution sequence defined (dependency order)
@@ -404,6 +408,8 @@ Document your analysis - don't just think it. Create written dependency maps and
 - Plan integration approach BEFORE starting
 
 ### Stage 3: Parallel Execution ⚡
+**🎭 REALITY CHECK**: Are you assuming agents will "keep working" after invocation? STOP. Task tool = single message only. You must continuously orchestrate.
+
 **CRITICAL REALITIES:**
 - **Agents are ephemeral** - Task tool = single message exchange only
 - **No background processing** - Must continuously invoke agents
@@ -411,23 +417,88 @@ Document your analysis - don't just think it. Create written dependency maps and
 
 **⚠️ NEVER assume agents continue working between invocations**
 
-### Stage 4: Integration & Convergence 🔗
-**🚨 MOST CRITICAL STAGE - Where Most Failures Occur**
+### Stage 4: PR Creation & Trust Checkpoint 🛑 [NEW - MANDATORY]
+**🎭 REALITY CHECK**: Are you thinking "I'll just integrate manually to save time"? STOP. This thought means you're in performance mode. Snap out of it.
 
-**INTEGRATION REALITY:**
-- **Pods work in ISOLATION** - Each pod's work exists only in their worktree
-- **Integration is MANUAL** - Changes don't automatically merge
-- **Dependency order matters** - Must integrate in correct sequence
+**Why this matters**: Without PRs, your work is invisible to the user. PRs = trust.
 
-**INTEGRATION CHECKLIST:**
-- [ ] All pod changes copied to integration workspace
-- [ ] Import statements added for new modules
-- [ ] Extracted code removed from original files
-- [ ] No circular imports created
-- [ ] All dependencies resolve correctly
+**REQUIRED ACTIONS (NON-NEGOTIABLE)**:
+Each pod MUST:
+1. Commit their work with descriptive message format: `feat(module): Description (#issue)`
+2. Push feature branch to origin
+3. Create PR with clear title and description
+4. Report PR URL back to orchestrator
 
-### Stage 5: Validation & Quality Assurance ✅
-**🚨 CRITICAL: Never Trust Agent Reports Without Independent Verification**
+**ORCHESTRATOR CHECKLIST**:
+- [ ] All pods have committed their work
+- [ ] All pods have pushed to origin
+- [ ] All pods have created PRs
+- [ ] I have collected ALL PR URLs
+- [ ] I can show the user concrete evidence of work
+
+**⚠️ WARNING**: Attempting to skip this stage creates 3-5 hours of cleanup work
+**✅ REALITY**: Following this process builds user trust and confidence
+
+**TRUST CHECKPOINT QUESTIONS**:
+- Can the user see what each pod did? (If no, you failed)
+- Can the user review the changes? (If no, you failed)
+- Would you want to inherit this codebase? (If no, you failed)
+
+**PROCEED ONLY WHEN**: You have a documented list of PR URLs like:
+```
+Pod-1: PR #106 - feat: Extract logging module (#96)
+Pod-2: PR #107 - feat: Extract config module (#98)
+Pod-3: PR #108 - feat: Extract utils module (#100)
+```
+
+### Stage 5: Code Review & Quality Gates 🔍 [NEW - MANDATORY]
+**🎭 REALITY CHECK**: Tempted to skip review because "the code looks fine"? That's performance mode talking.
+
+**PURPOSE**: Ensure code quality before integration
+
+**REVIEW CHECKLIST** (for each PR):
+- [ ] Code follows project style guidelines
+- [ ] Tests included/updated where appropriate
+- [ ] No obvious bugs or issues
+- [ ] Import organization correct
+- [ ] No merge conflicts with main
+- [ ] Dependencies properly declared
+
+**REVIEW OUTCOMES**:
+- **APPROVED**: Ready to merge
+- **CHANGES REQUESTED**: Pod must address feedback
+- **BLOCKED**: Requires architectural discussion
+
+**⚠️ ANTI-PATTERN**: "All PRs look good" (be specific about what you reviewed)
+**✅ GOOD PATTERN**: "PR #106: Verified logging module follows patterns, imports organized correctly"
+
+### Stage 6: Sequential PR Integration 🔗 [RENAMED - WAS STAGE 4]
+**🎭 REALITY CHECK**: About to merge all PRs at once? That's rushing. One at a time with testing.
+
+**INTEGRATION PROTOCOL**:
+1. **Merge PRs in dependency order** (foundation first)
+2. **Run tests after each merge** 
+3. **Handle conflicts immediately**
+4. **Never batch merge without testing between**
+
+**CORRECT SEQUENCE EXAMPLE**:
+```bash
+# 1. Merge foundation modules first
+gh pr merge 106 --squash  # Constants module
+# Test: python -m mgit --version
+
+# 2. Merge dependent modules
+gh pr merge 107 --squash  # Config (depends on constants)  
+# Test: python -m mgit --version
+
+# 3. Continue in dependency order...
+```
+
+**⚠️ DANGER**: Merging all PRs at once = cascade failures
+**✅ SAFETY**: Sequential merge with testing = stable integration
+
+### Stage 7: Post-Integration Validation ✅ [RENAMED - WAS STAGE 5]
+**🎭 REALITY CHECK**: Planning to skip testing because "agents said it works"? Don't trust, verify.
 
 **VERIFICATION PROTOCOL:**
 - Test basic functionality of the integrated system
@@ -461,41 +532,77 @@ Based on empirical success:
 
 **NEVER proceed to next sprint without completing this stage**
 
-### Stage 6: Sprint Closure & Documentation 📝
-**REQUIRED DELIVERABLES:**
-- [ ] Architecture documentation updated
+### Stage 8: Sprint Closure & Pod Cleanup 📝 [RENAMED - WAS STAGE 6]
+**🎭 REALITY CHECK**: Want to rush to the next sprint? Stop. Clean worktrees prevent future pain.
+- [ ] All PRs merged to main
+- [ ] All pod worktrees on clean main branch
 - [ ] Sprint metrics documented (measurable improvements)
 - [ ] Lessons learned captured
 - [ ] Next sprint foundation prepared
 
+**POD CLEANUP PROTOCOL**:
+```bash
+# For each pod
+cd /path/to/pod-1
+git checkout main
+git pull origin main
+git branch -d feature-branch  # Delete old feature branch
+git status  # Must show clean
+```
+
+**SPRINT COMPLETION CRITERIA**:
+✅ A sprint is ONLY complete when:
+- All PRs are merged to main
+- All pods are on clean main branch
+- Integration is tested and working
+- Documentation is updated
+
+❌ A sprint is NOT complete if:
+- PRs exist but aren't merged
+- Pods have uncommitted work
+- Integration was done manually without PRs
+- "It works on my machine" without evidence
+
+## Simple Reality: Process Over Performance
+
+The main orchestrator failure is prioritizing speed over following the process.
+
+**When tempted to skip stages**, remember:
+- Skipping stages creates cleanup work for the user
+- The user needs to see and review your work
+- Consistency matters more than speed
+
 ## Common MAWEP Orchestrator Mistakes 🚫
 
-### ❌ **Mistake #1: Trusting Agent Reports**
-**Problem:** Agents report "completed" but work isn't actually integrated
-**Solution:** Always verify independently with tests/commands
+### ❌ **Mistake #1: Skipping PR Creation Stage**
+**Problem:** "I'll save time by manually integrating"
+**Reality:** Creates 3-5 hours of cleanup work
+**Solution:** ALWAYS create PRs - it's how professionals work
 
-### ❌ **Mistake #2: Skipping Integration Stage**
-**Problem:** Assuming pod work automatically merges
-**Solution:** Explicit integration protocol with verification steps
+### ❌ **Mistake #2: Trusting Agent Reports**
+**Problem:** Agents report "completed" but no PR exists
+**Solution:** Always verify with concrete evidence (PR URLs)
 
-### ❌ **Mistake #3: Rushing to Next Sprint**
-**Problem:** Moving forward with incomplete foundation
-**Solution:** Complete all 6 stages before proceeding
+### ❌ **Mistake #3: Batch Integration Without Testing**
+**Problem:** Merging all PRs at once causes cascade failures
+**Solution:** Sequential merge with testing between each
 
-### ❌ **Mistake #4: Poor Dependency Analysis**
-**Problem:** Starting dependent work before foundation is ready
-**Solution:** Map dependencies clearly and enforce execution order
+### ❌ **Mistake #4: Leaving Pods Dirty Between Sprints**
+**Problem:** Next sprint starts with technical debt
+**Solution:** Stage 8 cleanup is MANDATORY
 
-### ❌ **Mistake #5: Insufficient Verification**
-**Problem:** Integration breaks but not caught until later
-**Solution:** Test at each stage, not just at the end
+### ❌ **Mistake #5: Performance Theater**
+**Problem:** Showing "fast" completion times by skipping process
+**Solution:** Measure success by trust built, not time saved
 
 ## MAWEP Success Indicators ✅
-- [ ] All 6 stages completed with documented verification
+- [ ] All 8 stages completed with documented verification
+- [ ] PR URLs collected and documented for every pod
 - [ ] Independent testing confirms functionality preserved
-- [ ] Architecture improvements measurable
+- [ ] All pods on clean main branch after sprint
+- [ ] User can review all changes through PRs
 - [ ] Foundation ready for next sprint
-- [ ] Team understands what was accomplished
+- [ ] Zero technical debt carried forward
 
 ## Emergency Recovery Protocol 🚨
 **If you discover a sprint is incomplete:**

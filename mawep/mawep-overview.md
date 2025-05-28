@@ -1,5 +1,7 @@
 # MAWEP Overview
 
+**🎭 REALITY CHECK**: Thinking MAWEP will "automate everything"? Wrong. MAWEP requires constant orchestration. If that sounds like work, use sequential development instead.
+
 MAWEP (Multi-Agent Workflow Execution Process) is a pure prompt-based orchestration framework that uses Claude Code's Task tool to coordinate parallel AI agent development.
 
 ## What MAWEP Actually Is

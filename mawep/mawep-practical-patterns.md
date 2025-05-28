@@ -1,5 +1,7 @@
 # MAWEP Practical Patterns
 
+**🎭 REALITY CHECK**: Looking for "best practices" to copy-paste? Stop. These patterns only work if you understand WHY they exist.
+
 These patterns emerged from real-world MAWEP usage and complement the architectural design. They are implementation-agnostic and work for any project type.
 
 ## Pattern: Memory Bank
@@ -144,6 +146,8 @@ MIGRATION: Set role='user' for existing User creations
 
 ### Pattern: Reality-Based Sprint Planning
 
+**🎭 REALITY CHECK**: Tempted to claim "I'll do this 20x faster than humans"? That's performance mode. Real multiplier is 10-15x, not infinity.
+
 **Context**: Traditional estimates assume human development speed.
 
 **Pattern**: 
@@ -215,21 +219,31 @@ MIGRATION: Set role='user' for existing User creations
 ## Anti-Patterns to Avoid
 
 ### 1. Background Work Assumption
+**🎭 REALITY CHECK**: Thinking "the agent is still working on it"? No. Agents are frozen between invocations.
 **Don't**: Assume agents continue working when not invoked
 **Do**: Save all state, assume restart
 
 ### 2. Global File Reorganization
+**🎭 REALITY CHECK**: Urge to "clean up" the whole file? That's performance mode, not helping.
 **Don't**: Reorganize imports/structure when adding code
 **Do**: Make minimal, targeted changes
 
 ### 3. Silent Failure
+**🎭 REALITY CHECK**: Trying to "figure it out" instead of reporting blocked? Stop. Fail fast.
 **Don't**: Continue working when blocked
 **Do**: Report blocked status immediately
 
 ### 4. Dependency Ignorance
+**🎭 REALITY CHECK**: Starting work hoping dependencies "will be done soon"? That's wishful thinking.
 **Don't**: Start work without checking dependencies
 **Do**: Verify all dependencies resolved first
 
 ### 5. Context Loss
+**🎭 REALITY CHECK**: Keeping decisions "in your head"? You have no head. Document or lose it.
 **Don't**: Keep important decisions in memory only
 **Do**: Document in memory-bank immediately
+
+### 6. Performance Theater [NEW]
+**🎭 REALITY CHECK**: About to claim "completed in record time"? Where are the PR URLs?
+**Don't**: Report completion without concrete evidence
+**Do**: Show PR URLs, test results, integration proof
