@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-05-28
+
+### Changed
+- **CRITICAL**: Complete refactoring of MAWEP documentation to properly distinguish between pods (persistent) and agents (ephemeral)
+- Updated all state tracking from agent-centric to pod-centric model throughout 17 files
+- Revised main repository README.md to accurately describe MAWEP architecture
+- Changed all diagrams to show pods as persistent worktrees and agents as Task tool invocations
+- Removed misleading references to "spawning" agents - now correctly shows "invoking" agents
+- Updated orchestrator prompt to track pods in state file, not agents
+- Fixed scenario walkthrough to remove Redis/message bus references and use Task tool model
+
+### Fixed
+- Corrected conceptual confusion where agents were treated as persistent entities
+- Fixed state file examples to track pods instead of agents (pods have status, not agents)
+- Updated all "Agent-N" references to "Pod-N" in examples and diagrams
+- Clarified that orchestrator invokes agents FOR pods, not manages agents directly
+- Fixed coordination branch pattern to reference pods, not agents
+
 ## [0.2.0] - 2025-05-27
 
 ### Added

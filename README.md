@@ -12,15 +12,15 @@ Prompt Packs provides ready-to-use prompt modules that extend Claude Code's capa
 
 ### MAWEP - Multi-Agent Workflow Execution Process 🤖
 
-*"I need your clothes, your boots, and your GitHub issues."* MAWEP enables parallel AI agent development using only Claude Code's built-in Task tool. It coordinates 2-10 AI agents working on GitHub issues simultaneously without requiring any external infrastructure. No fate but what we make!
+*"I need your clothes, your boots, and your GitHub issues."* MAWEP enables parallel AI development using only Claude Code's built-in Task tool. It coordinates multiple development pods (persistent git worktrees) where AI agents work on GitHub issues simultaneously without requiring any external infrastructure. No fate but what we make!
 
 #### What MAWEP Does (It's Got the Power!)
 
-- **Parallel Development**: Spawn multiple AI agents like you're assembling the A-Team
+- **Parallel Development**: Coordinate multiple AI agents working in persistent pods like you're assembling the A-Team
 - **Dependency Management**: Automatically sequences work - smoother than Magnum P.I.'s mustache
 - **Quality Gates**: Built-in review processes tougher than the Kobra Kai dojo
 - **State Persistence**: Simple YAML-based state management (no flux capacitor required)
-- **Clean Isolation**: Each agent works in its own git worktree - "Nobody puts Baby in a corner!"
+- **Clean Isolation**: Each pod has its own git worktree where agents work - "Nobody puts Baby in a corner!"
 
 #### How It Works
 
@@ -32,13 +32,13 @@ flowchart TD
     Analyze --> CreateWT[Create Git Worktrees]
     CreateWT --> Loop{Development Loop}
     
-    Loop --> Invoke1[Invoke Agent-1]
-    Loop --> Invoke2[Invoke Agent-2]
-    Loop --> InvokeN[Invoke Agent-N]
+    Loop --> Invoke1[Invoke Agent for Pod-1]
+    Loop --> Invoke2[Invoke Agent for Pod-2]
+    Loop --> InvokeN[Invoke Agent for Pod-N]
     
-    Invoke1 --> Status1[Get Status]
-    Invoke2 --> Status2[Get Status]
-    InvokeN --> StatusN[Get Status]
+    Invoke1 --> Status1[Get Pod-1 Status]
+    Invoke2 --> Status2[Get Pod-2 Status]
+    InvokeN --> StatusN[Get Pod-N Status]
     
     Status1 --> Loop
     Status2 --> Loop
@@ -50,27 +50,36 @@ flowchart TD
     Review --> Merge[Merge PRs]
 ```
 
+#### Key Concepts 🔑
+
+- **Pods**: Persistent git worktrees where work happens (like offices that stay open)
+- **Agents**: Ephemeral Task tool invocations that work IN pods (like phone calls - they connect, deliver a message, then hang up)
+- **Orchestrator**: You, managing pods and continuously invoking agents to keep work moving
+
+Remember: Agents are temporary workers summoned to work in persistent pod workspaces!
+
 #### Architecture
 
 ```mermaid
 %%{init: {'flowchart': {'defaultRenderer': 'elk'}}}%%
 flowchart TD
     Orch[Orchestrator] --> State[mawep-state.yaml]
-    Orch --> Agent1[Agent-1]
-    Orch --> Agent2[Agent-2]
-    Orch --> AgentN[Agent-N]
     
-    Agent1 --> WT1[Worktree-1]
-    Agent2 --> WT2[Worktree-2]
-    AgentN --> WTN[Worktree-N]
+    State --> Pod1[Pod-1<br/>Persistent Worktree]
+    State --> Pod2[Pod-2<br/>Persistent Worktree]
+    State --> PodN[Pod-N<br/>Persistent Worktree]
     
-    WT1 --> MB1[Memory Bank]
-    WT2 --> MB2[Memory Bank]
-    WTN --> MBN[Memory Bank]
+    Orch -.->|Invokes agents via Task tool| Pod1
+    Orch -.->|Invokes agents via Task tool| Pod2
+    Orch -.->|Invokes agents via Task tool| PodN
     
-    Agent1 --> PR1[Pull Request]
-    Agent2 --> PR2[Pull Request]
-    AgentN --> PRN[Pull Request]
+    Pod1 --> MB1[Memory Bank]
+    Pod2 --> MB2[Memory Bank]
+    PodN --> MBN[Memory Bank]
+    
+    Pod1 --> PR1[Pull Request]
+    Pod2 --> PR2[Pull Request]
+    PodN --> PRN[Pull Request]
 ```
 
 
