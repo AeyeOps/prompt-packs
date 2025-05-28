@@ -10,13 +10,13 @@ flowchart TD
     O --> A2[Agent 2]
     O --> A3[Agent N]
     
-    O -.->|creates once| W1[Agent 1 Worktree]
-    O -.->|creates once| W2[Agent 2 Worktree]
-    O -.->|creates once| W3[Agent N Worktree]
+    O -.->|creates once| P1[Pod-1]
+    O -.->|creates once| P2[Pod-2]
+    O -.->|creates once| P3[Pod-N]
     
-    A1 -.->|reuses| W1
-    A2 -.->|reuses| W2
-    A3 -.->|reuses| W3
+    A1 -.->|works in| P1
+    A2 -.->|works in| P2
+    A3 -.->|works in| P3
     
     A1 & A2 & A3 --> O
 ```
@@ -50,20 +50,20 @@ stateDiagram-v2
 sequenceDiagram
     User->>Orchestrator: Start with issues
     Orchestrator->>GitHub: Get issues
-    Orchestrator->>Orchestrator: Check if Agent1 has worktree
-    Note over Orchestrator: Create worktree only if needed
-    Orchestrator->>Agent1: Assign issue 101 + worktree path
+    Orchestrator->>Orchestrator: Check if Pod-1 exists
+    Note over Orchestrator: Create pod only if needed
+    Orchestrator->>Agent1: Work on issue 101 in Pod-1
     
     loop Working on Issue
-        Agent1->>Agent1: Code changes
-        Agent1->>Agent1: Run tests
-        Agent1->>Agent1: Commit & push
+        Agent1->>Pod-1: Code changes
+        Agent1->>Pod-1: Run tests
+        Agent1->>Pod-1: Commit & push
         Agent1->>GitHub: Update PR
         Agent1->>Orchestrator: Progress update
     end
     
     Agent1->>Orchestrator: Issue complete
-    Orchestrator->>Agent1: Assign issue 102 (same worktree)
+    Orchestrator->>Agent2: Work on issue 102 in Pod-1
 ```
 
 ## Dependency Graph
@@ -96,9 +96,9 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
 flowchart TD
-    ReadyIssues[Issues Ready for Assignment] --> CountAgents{2+ Agents?}
-    CountAgents -->|No| ProceedNormal[Proceed to Assignment]
-    CountAgents -->|Yes| DeepAnalysis[Architect Ultrathinking]
+    ReadyIssues[Issues Ready for Assignment] --> CountPods{2+ Pods?}
+    CountPods -->|No| ProceedNormal[Proceed to Assignment]
+    CountPods -->|Yes| DeepAnalysis[Architect Ultrathinking]
     
     DeepAnalysis --> ExamineScope[Examine All Issue Scopes]
     ExamineScope --> CheckInterfaces[Check for Shared Interfaces]
@@ -111,7 +111,7 @@ flowchart TD
     
     DefineFoundation --> CreateIssue[Create Foundation Issue]
     CreateIssue --> DocDetails[Document Requirements]
-    DocDetails --> AssignSingle[Assign to Single Agent]
+    DocDetails --> AssignSingle[Assign to Single Pod]
     
     AssignSingle --> BuildFoundation[Build Foundation]
     BuildFoundation --> TestFoundation[Test Thoroughly]
@@ -132,7 +132,7 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"defaultRenderer": "elk"}} }%%
 flowchart TD
-    AllComplete[All Agents Complete] --> GatherPRs[Gather All PRs]
+    AllComplete[All Pods Complete] --> GatherPRs[Gather All PRs]
     GatherPRs --> ArchThink[Architect Ultrathinking]
     ArchThink --> Holistic[Holistic Analysis]
     
@@ -245,18 +245,18 @@ flowchart TD
     Fetch --> Build[Build Dependency Graph]
     Build --> Check{Any Issues Ready?}
     
-    Check -->|Yes| MultiAgent{Multiple Agents?}
+    Check -->|Yes| MultiPod{Multiple Pods?}
     Check -->|No| Wait[Wait for Completion]
     
-    MultiAgent -->|No| HasWT{Agent has Worktree?}
-    MultiAgent -->|Yes| ArchAnalysis[Architect Ultrathinking]
+    MultiPod -->|No| HasPod{Pod exists?}
+    MultiPod -->|Yes| ArchAnalysis[Architect Ultrathinking]
     
     ArchAnalysis --> FoundDeps{Found Hidden Dependencies?}
-    FoundDeps -->|No| HasWT
+    FoundDeps -->|No| HasPod
     FoundDeps -->|Yes| CreateDepIssue[Create Dependency Issue]
     
-    CreateDepIssue --> SingleAgent[Assign to Single Agent]
-    SingleAgent --> DepWork[Implement Foundation]
+    CreateDepIssue --> SinglePod[Assign to Single Pod]
+    SinglePod --> DepWork[Implement Foundation]
     DepWork --> DepTest{Tests Pass?}
     DepTest -->|No| DepWork
     DepTest -->|Yes| DepPR[Create PR]
@@ -270,11 +270,11 @@ flowchart TD
     DepMerge --> UpdateGraph[Update Dependency Graph]
     UpdateGraph --> Check
     
-    HasWT -->|No| CreateWT[Create Worktree]
-    HasWT -->|Yes| Assign[Assign Issue to Agent]
-    CreateWT --> Assign
+    HasPod -->|No| CreatePod[Create Pod]
+    HasPod -->|Yes| Assign[Assign Issue to Pod]
+    CreatePod --> Assign
     
-    Assign --> Work[Agent Works on Issue]
+    Assign --> Work[Agent Works in Pod]
     
     Work --> Code[Write/Update Code]
     Code --> Test{Tests Pass?}
@@ -291,7 +291,7 @@ flowchart TD
     Complete --> Check
     Wait --> Check
     
-    Check -->|All Done| Review{Multiple Agents?}
+    Check -->|All Done| Review{Multiple Pods?}
     Review -->|No| End([Sprint Complete])
     Review -->|Yes| ArchReview[Architect Reviews All PRs]
     

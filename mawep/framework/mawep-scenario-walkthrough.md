@@ -55,13 +55,13 @@ issues:
 
 ### T+0: Initialization Phase
 
-```bash
-$ mawep start --issues "101,102,103,104,105"
+```
+Orchestrator: Starting MAWEP workflow for issues 101,102,103,104,105
 
-[INFO] Loading configuration from mawep.yaml
-[INFO] Starting Redis message bus at redis://localhost:6379
-[INFO] Initializing 5 agents
-[INFO] Building dependency graph for 5 issues
+[INFO] Creating mawep-workspace directory
+[INFO] Fetching issues with gh CLI
+[INFO] Building dependency graph
+[INFO] Creating 5 pods for parallel work
 [INFO] Dependency analysis complete:
   - Issue 101: No dependencies (can start immediately)
   - Issue 102: Depends on 101
@@ -70,39 +70,58 @@ $ mawep start --issues "101,102,103,104,105"
   - Issue 105: Depends on 104
 ```
 
-**Orchestrator Decision**: Assign issue 101 to Agent-0 since it has no dependencies.
+**Orchestrator Decision**: Assign issue 101 to Pod-1 since it has no dependencies.
 
 ### T+1 minute: First Assignment
 
-```python
-# Agent-0 receives assignment
-{
-  "timestamp": "2024-01-15T10:01:00Z",
-  "from": "orchestrator",
-  "to": "direct:agent_0",
-  "message_type": "issue_assignment",
-  "payload": {
-    "issue_number": 101,
-    "branch": "feature/101-payment-gateway-abstraction",
-    "worktree": "/repo/worktrees/agent-0-issue-101"
-  }
-}
+```
+Orchestrator invokes agent for Pod-1 using Task tool:
+
+Task: Implement Issue #101
+Prompt: You are an agent working in pod-1. Your assignment:
+
+Issue: #101 - Create payment gateway abstraction
+Branch: feature/101-payment-gateway-abstraction
+Pod: ./worktrees/pod-1
+
+Instructions:
+1. cd into your pod
+2. Create the branch from main
+3. Implement the issue completely
+4. Report back with STATUS and PROGRESS
 ```
 
-**Agent-0 Actions**:
+**Agent in Pod-1 Actions**:
 ```bash
-# Create worktree
-git worktree add /repo/worktrees/agent-0-issue-101 -b feature/101-payment-gateway-abstraction
+# Navigate to pod worktree
+cd ./worktrees/pod-1
+
+# Create feature branch
+git checkout -b feature/101-payment-gateway-abstraction origin/main
 
 # Start implementation
-cd /repo/worktrees/agent-0-issue-101
+# Working on src/payment/gateway.py and interfaces.py
 ```
 
 ### T+30 minutes: Progress Update
 
-**Agent-0** posts to GitHub issue #101:
+**Orchestrator checks Pod-1 status**:
+```
+Task: Check Pod-1 Progress
+Prompt: Report status on issue #101
+```
+
+**Agent in Pod-1 responds**:
+```
+STATUS: working
+PROGRESS: Created abstract PaymentGateway class, defined PaymentRequest/Response interfaces
+BLOCKERS: None
+NEXT: Working on transaction state management and error handling
+```
+
+The agent also posts to GitHub issue #101:
 ```markdown
-## 🤖 Agent Update - [Agent-0] [2024-01-15 10:31 UTC]
+## 🤖 Pod-1 Update - [2024-01-15 10:31 UTC]
 
 ### Progress
 - ✅ Created abstract PaymentGateway class
@@ -116,35 +135,33 @@ cd /repo/worktrees/agent-0-issue-101
 
 ### Estimated Completion
 - 40% complete
-- ETA: 2024-01-15 14:00 UTC
 ```
 
 ### T+2 hours: Breaking Change Alert
 
-**Agent-0** discovers need for API change and broadcasts:
-```json
-{
-  "timestamp": "2024-01-15T12:00:00Z",
-  "from_agent": "agent-0",
-  "to": ["broadcast:breaking_changes"],
-  "message_type": "interface_change",
-  "payload": {
-    "file": "src/payment/interfaces.py",
-    "change_type": "new_required_field",
-    "details": "Added 'idempotency_key' as required field in PaymentRequest",
-    "affected_issues": ["102", "103", "104"],
-    "migration_guide": "Generate UUID for idempotency_key in all PaymentRequest instantiations"
-  },
-  "priority": "high",
-  "requires_ack": true
-}
+**Agent in Pod-1 reports breaking change**:
+```
+BREAKING CHANGE ALERT
+POD: pod-1
+FILE: src/payment/interfaces.py
+CHANGE: Added 'idempotency_key' as required field in PaymentRequest
+AFFECTS: Issues 102, 103, 104 (any code creating PaymentRequest)
+MIGRATION: Generate UUID for idempotency_key in all PaymentRequest instantiations
 ```
 
-**Orchestrator** holds off on assigning issues 102, 103, 104 until this is resolved.
+**Orchestrator** receives this alert and holds off on assigning issues 102, 103, 104 until this interface stabilizes. The orchestrator updates its state file to track this dependency.
 
 ### T+4 hours: Issue 101 Complete
 
-**Agent-0** completes issue 101:
+**Agent in Pod-1 reports completion**:
+```
+STATUS: complete
+ISSUE: 101
+PR: https://github.com/org/repo/pull/456
+PROGRESS: Payment gateway abstraction fully implemented with 95% test coverage
+```
+
+The agent has already pushed the code:
 ```bash
 # Commit and push
 git add -A
@@ -160,33 +177,48 @@ git push origin feature/101-payment-gateway-abstraction
 ```
 
 **Orchestrator** immediately assigns:
-- Issue 102 → Agent-1
-- Issue 103 → Agent-2  
-- Issue 104 → Agent-3
+- Issue 102 → Pod-2
+- Issue 103 → Pod-3  
+- Issue 104 → Pod-4
 
 ### T+4.5 hours: Parallel Development
 
-Three agents work simultaneously:
+**Orchestrator invokes agents for three pods in parallel**:
 
-**Agent-1** (Stripe):
+**Pod-2** (Stripe):
+```
+Task: Implement Issue #102
+Prompt: You are an agent working in pod-2. Implement Stripe payment provider.
+Dependencies: Issue #101 is complete. Use PaymentGateway interface from pod-1.
+```
+
+**Pod-3** (PayPal):
+```
+Task: Implement Issue #103  
+Prompt: You are an agent working in pod-3. Implement PayPal payment provider.
+Dependencies: Issue #101 is complete. Use PaymentGateway interface from pod-1.
+```
+
+**Pod-4** (API):
+```
+Task: Implement Issue #104
+Prompt: You are an agent working in pod-4. Create checkout API endpoints.
+Dependencies: Issue #101 is complete. Use PaymentGateway abstraction.
+```
+
+Agents work in their respective pods:
 ```python
-# Working on src/payment/providers/stripe.py
+# Pod-2: src/payment/providers/stripe.py
 class StripeGateway(PaymentGateway):
     def process_payment(self, request: PaymentRequest) -> PaymentResponse:
         # Implementation...
-```
 
-**Agent-2** (PayPal):
-```python
-# Working on src/payment/providers/paypal.py
+# Pod-3: src/payment/providers/paypal.py  
 class PayPalGateway(PaymentGateway):
     def process_payment(self, request: PaymentRequest) -> PaymentResponse:
         # Implementation...
-```
 
-**Agent-3** (API):
-```python
-# Working on src/api/checkout.py
+# Pod-4: src/api/checkout.py
 @router.post("/checkout/process")
 async def process_checkout(request: CheckoutRequest) -> CheckoutResponse:
     # Implementation...
@@ -194,82 +226,121 @@ async def process_checkout(request: CheckoutRequest) -> CheckoutResponse:
 
 ### T+6 hours: Conflict Detection
 
-**Agent-3** attempts to modify a shared utility file:
-```json
-{
-  "timestamp": "2024-01-15T16:00:00Z",
-  "from_agent": "agent-3",
-  "to": ["orchestrator"],
-  "message_type": "file_conflict_check",
-  "payload": {
-    "files": ["src/utils/validation.py"],
-    "action": "modify"
-  }
-}
+**Orchestrator checks Pod-4 status**:
+```
+Task: Check Pod-4 Progress
+Prompt: Report status on issue #104
 ```
 
-**Orchestrator** responds:
-```json
-{
-  "timestamp": "2024-01-15T16:00:10Z",
-  "from": "orchestrator",
-  "to": ["direct:agent_3"],
-  "message_type": "conflict_detected",
-  "payload": {
-    "file": "src/utils/validation.py",
-    "locked_by": "agent-1",
-    "suggestion": "Create new validation in src/api/validators.py instead"
-  }
-}
+**Agent in Pod-4 reports potential conflict**:
+```
+STATUS: blocked
+PROGRESS: API endpoints 80% complete
+BLOCKERS: Need to modify src/utils/validation.py but it may conflict with other pods
+NEXT: Waiting for guidance on shared file modification
+```
+
+**Orchestrator checks state and finds Pod-2 is also working on validation**. Orchestrator invokes Pod-4 again with guidance:
+
+```
+Task: Continue with Alternative Approach
+Prompt: Pod-4, instead of modifying src/utils/validation.py, create new validation 
+in src/api/validators.py to avoid conflicts with Pod-2's work.
+```
+
+**Agent in Pod-4 acknowledges**:
+```
+Acknowledged. Creating separate validation in src/api/validators.py instead.
+STATUS: working
 ```
 
 ### T+8 hours: Dependencies Resolved
 
-**Agent-1** completes issue 102:
-```bash
-git push origin feature/102-stripe-payment-provider
+**Orchestrator's continuous monitoring reveals completions**:
+
+```
+# Every 30 seconds, orchestrator checks all working pods
+Task: Status Check Round
+Prompts sent to Pod-2, Pod-3, Pod-4
 ```
 
-**Agent-2** completes issue 103:
-```bash
-git push origin feature/103-paypal-payment-provider
+**Pod-2 reports**:
+```
+STATUS: complete
+ISSUE: 102
+PR: https://github.com/org/repo/pull/457
+PROGRESS: Stripe payment provider fully implemented and tested
 ```
 
-**Agent-3** completes issue 104:
-```bash
-git push origin feature/104-checkout-api-endpoints
+**Pod-3 reports**:
+```
+STATUS: complete  
+ISSUE: 103
+PR: https://github.com/org/repo/pull/458
+PROGRESS: PayPal payment provider fully implemented and tested
 ```
 
-**Orchestrator** assigns issue 105 → Agent-4
+**Pod-4 reports**:
+```
+STATUS: complete
+ISSUE: 104
+PR: https://github.com/org/repo/pull/459
+PROGRESS: Checkout API endpoints complete with integration tests
+```
+
+**Orchestrator** updates state file and assigns issue 105 → Pod-5
 
 ### T+10 hours: Frontend Development
 
-**Agent-4** starts frontend work with all dependencies ready:
+**Orchestrator invokes agent for Pod-5**:
+```
+Task: Implement Issue #105
+Prompt: You are an agent working in pod-5. Implement checkout frontend components.
+Dependencies: Issue #104 is complete. The checkout API is now available.
+Pod: ./worktrees/pod-5
+```
+
+**Agent in Pod-5 starts frontend work**:
 ```typescript
-// frontend/components/Checkout.tsx
+// Working in pod-5/frontend/components/Checkout.tsx
 import { useCheckoutAPI } from '../api/checkout';
 
 export const Checkout: React.FC = () => {
   // Implementation with full API available
+  const { processCheckout } = useCheckoutAPI();
+  // Component implementation...
 };
 ```
 
 ### T+12 hours: Final Coordination
 
-**Agent-4** broadcasts completion readiness:
-```json
-{
-  "timestamp": "2024-01-15T22:00:00Z",
-  "from_agent": "agent-4",
-  "to": ["broadcast:merge_ready"],
-  "message_type": "feature_complete",
-  "payload": {
-    "issue": 105,
-    "branch": "feature/105-checkout-frontend",
-    "integration_tests": "passing",
-    "ready_for_review": true
-  }
-}
+**Orchestrator's regular status check reveals all work complete**:
+
+```
+Task: Final Status Check
+Prompts sent to all pods
+```
+
+**Pod-5 reports**:
+```
+STATUS: complete
+ISSUE: 105
+PR: https://github.com/org/repo/pull/460
+PROGRESS: Checkout frontend components complete with e2e tests
+BLOCKERS: None
+```
+
+**Orchestrator checks state file**:
+```yaml
+issues_status:
+  101: complete (Pod-1)
+  102: complete (Pod-2)
+  103: complete (Pod-3)
+  104: complete (Pod-4)
+  105: complete (Pod-5)
+  
+all_issues_complete: true
+trigger_review_phase: true
 ```
 
 ## Merge Sequence
@@ -326,9 +397,9 @@ git merge feature/105-checkout-frontend
 ### What Worked Well
 
 1. **Dependency Management**: Clear dependencies prevented wasted work
-2. **Parallel Execution**: 3 agents working simultaneously on providers and API
+2. **Parallel Execution**: 3 pods working simultaneously on providers and API
 3. **Proactive Communication**: Breaking change alert prevented downstream issues
-4. **Conflict Prevention**: File locking avoided merge conflicts
+4. **Conflict Prevention**: Pod isolation avoided merge conflicts
 
 ### Challenges Encountered
 
@@ -344,12 +415,12 @@ metrics:
   sequential_estimate_hours: 68
   speedup_factor: 5.67
   
-  agent_utilization:
-    agent_0: 82%
-    agent_1: 71%
-    agent_2: 69%
-    agent_3: 74%
-    agent_4: 88%
+  pod_utilization:
+    pod-1: 82%
+    pod-2: 71%
+    pod-3: 69%
+    pod-4: 74%
+    pod-5: 88%
     
   communication:
     total_messages: 347
@@ -366,7 +437,7 @@ metrics:
 ## Lessons Learned
 
 ### 1. Issue Sizing Matters
-- Issues should be 8-20 hours for optimal agent utilization
+- Issues should be 8-20 hours for optimal pod utilization
 - Too small: overhead dominates
 - Too large: reduces parallelization opportunities
 
@@ -387,12 +458,12 @@ metrics:
 
 ## Failure Scenarios
 
-### Scenario 1: Agent Crash
+### Scenario 1: Pod Non-Responsive
 ```bash
-# Agent-2 crashes at T+5 hours
-[ERROR] Agent-2 health check failed
-[INFO] Orchestrator detecting agent failure
-[INFO] Issue 103 reassigned to Agent-0 (now free)
+# Pod-3 stops responding at T+5 hours
+[ERROR] Task tool invocation for Pod-3 timed out
+[INFO] Orchestrator marks Pod-3 as non-responsive
+[INFO] Issue 103 reassigned to Pod-1 (now idle after PR merge)
 [WARN] 2 hour delay in issue 103 completion
 ```
 
@@ -401,7 +472,7 @@ metrics:
 # Issue 101 encounters unexpected complexity
 [WARN] Issue 101 ETA extended by 4 hours
 [INFO] Dependent issues 102,103,104 delayed
-[INFO] Agents 1,2,3 idle - no other assignable work
+[INFO] Pods 2,3,4 idle - no other assignable work
 [ERROR] Sprint deadline at risk
 ```
 

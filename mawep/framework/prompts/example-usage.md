@@ -32,15 +32,15 @@ Start by:
 The orchestrator will create `mawep-state.yaml`:
 
 ```yaml
-agents:
-  agent-1:
+pods:
+  pod-1:
     status: idle
     current_issue: null
-    worktree_path: ./worktrees/agent-1
-  agent-2:
+    worktree_path: ./worktrees/pod-1
+  pod-2:
     status: idle
     current_issue: null
-    worktree_path: ./worktrees/agent-2
+    worktree_path: ./worktrees/pod-2
 
 issues:
   101:
@@ -100,23 +100,23 @@ Based on analysis, orchestrator creates worktrees and spawns agents:
 
 ```bash
 # Orchestrator executes:
-git worktree add ./worktrees/agent-1 -b agent-1-work
-git worktree add ./worktrees/agent-2 -b agent-2-work
+git worktree add ./worktrees/pod-1 -b pod-1-work
+git worktree add ./worktrees/pod-2 -b pod-2-work
 ```
 
-Then spawns first agent:
+Then invokes agent for first pod:
 
 ```
 Task: Implement Issue #101
-Description: Agent-1 working on authentication
-Prompt: You are agent-1. Your assignment:
+Description: Agent working in pod-1 on authentication
+Prompt: You are an agent working in pod-1. Your assignment:
 
 Issue: #101 - Add user authentication
 Branch: feature/101-add-auth
-Worktree: ./worktrees/agent-1
+Pod: ./worktrees/pod-1
 
 Instructions:
-1. cd ./worktrees/agent-1
+1. cd ./worktrees/pod-1
 2. git checkout -b feature/101-add-auth origin/main
 3. Read issue with: gh issue view 101
 4. Implement the feature completely
@@ -131,42 +131,42 @@ PR: Link when created
 Follow the agent instructions in agent-prompt.md.
 ```
 
-## Step 5: Orchestrator Monitors Progress
+## Step 5: Orchestrator Monitors Pod Progress
 
-Orchestrator continuously checks on agents:
+Orchestrator continuously checks on pods:
 
 ```
 # Every 30 seconds, orchestrator runs:
 
-Task: Check Agent-1 Progress
+Task: Check Pod-1 Progress
 Description: Status check
-Prompt: You are agent-1. Report your current status on issue #101:
+Prompt: You are the agent in pod-1. Report your current status on issue #101:
 - STATUS: working/complete/blocked
 - PROGRESS: What you've accomplished
 - BLOCKERS: Any issues
 - PR: Link if created
 ```
 
-## Step 6: Handling Inter-Agent Communication
+## Step 6: Handling Inter-Pod Communication
 
-If agent-1 makes a breaking change:
+If work in pod-1 creates a breaking change:
 
 ```
-# Agent-1 reports:
+# Agent in pod-1 reports:
 BREAKING CHANGE ALERT
 FILE: src/models/user.ts
 CHANGE: Added required 'role' field to User interface
 AFFECTS: Any code creating User objects
 ```
 
-Orchestrator relays to agent-2:
+Orchestrator relays to pod-2:
 
 ```
 Task: Breaking Change Notice
-Description: Notify agent-2
-Prompt: You are agent-2. 
+Description: Notify pod-2
+Prompt: You are an agent in pod-2. 
 
-BREAKING CHANGE from agent-1:
+BREAKING CHANGE from pod-1:
 - File: src/models/user.ts  
 - Change: Added required 'role' field to User interface
 - Impact: Update any User object creation
@@ -211,7 +211,7 @@ Prompt: Analyze this workflow for improvements:
 Metrics:
 - Total time: 4 hours
 - Issues completed: 4/4
-- Agent utilization: 65%
+- Pod utilization: 65%
 - Rework required: 1 PR
 
 Timeline:
@@ -228,7 +228,7 @@ Follow post-mortem-analyst-prompt.md.
 ## Key Points
 
 1. **One orchestrator instance** manages everything
-2. **Agents are spawned** using Task tool
+2. **Agents are invoked** using Task tool to work in pods
 3. **State is tracked** in a simple YAML file
 4. **Communication happens** through orchestrator
 5. **No background work** - orchestrator drives everything
@@ -244,16 +244,16 @@ Follow post-mortem-analyst-prompt.md.
 
 ## Common Patterns
 
-### Checking if Agent is Done
+### Checking if Pod is Done
 ```
 Task: Quick Status Check
-Prompt: Agent-1, are you complete with issue #101? Reply with just "STATUS: complete" or "STATUS: working".
+Prompt: Pod-1 status check - are you complete with issue #101? Reply with just "STATUS: complete" or "STATUS: working".
 ```
 
-### Debugging Blocked Agent
+### Debugging Blocked Pod
 ```
 Task: Investigate Blocker
-Prompt: Agent-1, you reported being blocked. Show me:
+Prompt: Pod-1, you reported being blocked. Show me:
 1. The exact error message
 2. What you've tried
 3. What you think the issue is
@@ -261,10 +261,10 @@ Prompt: Agent-1, you reported being blocked. Show me:
 
 ### Coordinating Merge Order
 ```
-After reviews, tell each agent:
+After reviews, tell each pod:
 
 Task: Merge Preparation
-Prompt: Agent-1, your PR is approved. Please:
+Prompt: Pod-1, your PR is approved. Please:
 1. Rebase on latest main: git pull --rebase origin main
 2. Push updates
 3. Report when ready to merge

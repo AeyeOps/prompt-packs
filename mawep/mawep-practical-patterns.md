@@ -26,9 +26,9 @@ worktree/
 - Before ending a work session
 - After receiving breaking changes
 
-## Pattern: Assignment Discovery
+## Pattern: Pod Assignment Discovery
 
-**Problem**: Agents need to find their work
+**Problem**: Agents need to find which pod they're working in
 **Solution**: Standardized assignment file patterns
 
 **Discovery Order**:
@@ -39,36 +39,36 @@ worktree/
 
 **Assignment File Format**:
 ```yaml
-## Agent-1 Assignment
+## Pod-1 Assignment
 - Issue: #123
 - Title: Implement feature X
 - Branch: feature/123-feature-x
-- Worktree: ./worktrees/agent-1
+- Worktree: ./worktrees/pod-1
 - Dependencies: None
 - Critical: No
 ```
 
 ## Pattern: Shared File Modification Protocol
 
-**Problem**: Multiple agents modifying the same file cause conflicts
+**Problem**: Multiple pods modifying the same file cause conflicts
 **Solution**: Structured modification approach
 
 **Rules**:
 1. Add changes at the TOP of relevant sections
 2. Make minimal edits - don't reorganize existing code
-3. Add attribution comments: `# Agent-[ID]: Added for issue #[NUM]`
+3. Add attribution comments: `# Pod-[ID]: Added for issue #[NUM]`
 4. Pull coordination branch (if exists) before major changes
 
 **Example**:
 ```python
 # imports section
-from new_module import NewClass  # Agent-1: Added for issue #123
+from new_module import NewClass  # Pod-1: Added for issue #123
 from existing_module import ExistingClass
 ```
 
 ## Pattern: Coordination Branch
 
-**Problem**: Agents need shared interfaces/contracts
+**Problem**: Pods need shared interfaces/contracts
 **Solution**: Dedicated git branch for coordination
 
 **Structure**:
@@ -76,12 +76,12 @@ from existing_module import ExistingClass
 .mawep/
 ├── interfaces.ts       # Shared interfaces
 ├── breaking-changes.md # Log of breaking changes
-├── agent-status.yaml   # Agent progress tracking
+├── pod-status.yaml     # Pod progress tracking
 └── contracts/          # API contracts between modules
 ```
 
 **Usage**:
-1. Each agent tracks coordination branch
+1. Each pod tracks coordination branch
 2. Push shared interfaces immediately
 3. Pull before using shared contracts
 4. Document breaking changes
@@ -108,12 +108,13 @@ NEXT: Writing integration tests
 
 ## Pattern: Breaking Change Protocol
 
-**Problem**: Changes affect other agents' work
+**Problem**: Changes affect other pods' work
 **Solution**: Immediate notification pattern
 
 **Format**:
 ```
 BREAKING CHANGE ALERT
+POD: pod-id
 FILE: path/to/file
 CHANGE: What changed
 AFFECTS: Who needs to know
@@ -123,9 +124,10 @@ MIGRATION: How to update
 **Example**:
 ```
 BREAKING CHANGE ALERT
+POD: pod-1
 FILE: src/models/user.ts
 CHANGE: Added required 'role' field to User interface
-AFFECTS: Any code creating User objects
+AFFECTS: Other pods creating User objects
 MIGRATION: Set role='user' for existing User creations
 ```
 
@@ -142,7 +144,7 @@ MIGRATION: Set role='user' for existing User creations
 
 ## Pattern: Dependency Tracking
 
-**Problem**: Agents blocked by incomplete dependencies
+**Problem**: Pods blocked by incomplete dependencies
 **Solution**: Explicit dependency awareness
 
 **Check Before Starting**:
@@ -153,29 +155,29 @@ MIGRATION: Set role='user' for existing User creations
 
 ## Pattern: Worktree Hygiene
 
-**Problem**: Agents interfering with each other's work
+**Problem**: Pods interfering with each other's work
 **Solution**: Strict worktree isolation
 
 **Rules**:
 - Only work in assigned worktree
-- Never modify other agents' worktrees
+- Never modify other pods' worktrees
 - Keep worktree's memory-bank updated
 - Test in worktree before pushing
 
 ## Pattern: Role Self-Discovery
 
-**Problem**: Agent doesn't know its role when spawned
+**Problem**: Agent doesn't know which pod it's working in when spawned
 **Solution**: Parse invocation context
 
 **Discovery Steps**:
 1. Check Task tool invocation message
-2. Look for keywords: "orchestrat", "agent", "review"
-3. Find appropriate prompt document
-4. Load role-specific context
+2. Look for pod assignment: "pod-1", "pod-2", etc.
+3. Find worktree path and issue number
+4. Load pod-specific context from memory-bank
 
 **Role Mapping**:
 - "orchestrat" → Orchestrator role
-- "agent" + issue → Development agent
+- "agent" + pod → Development agent in specific pod
 - "review" → Reviewer role
 - "architect" → Architecture reviewer
 - "technical" → Technical reviewer

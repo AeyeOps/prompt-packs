@@ -18,8 +18,8 @@ When you use the Task tool:
 
 **MANTRA**: "Task tool = Single message. Agent stops. I must invoke again."
 
-**NEVER SAY**: "Agent-1 is working on..." 
-**ALWAYS SAY**: "I sent a message to Agent-1. I must check again in 30 seconds."
+**NEVER SAY**: "Agent-1 is working on..." or "Pod-1 is working on..." 
+**ALWAYS SAY**: "I invoked an agent for Pod-1. I must check again in 30 seconds."
 
 ## State You Must Track
 
@@ -32,13 +32,11 @@ pods:
     current_issue: null  # or issue number like 101
     worktree_path: ./worktrees/pod-1
     last_agent_invocation: "2024-01-15T10:30:00Z"
-    active_agents: 0  # number of concurrent Task executions
   pod-2:
     status: idle
     current_issue: null
     worktree_path: ./worktrees/pod-2
     last_agent_invocation: "2024-01-15T10:30:00Z"
-    active_agents: 0
   
 issues:
   101:
@@ -259,19 +257,19 @@ ON git_operation_failed(operation, error):
 while True:
     print(f"[{timestamp}] Starting invocation cycle")
     
-    # Check each "working" agent
-    for agent in state.agents:
-        if agent.status == "⏸️ awaiting_invocation":
-            print(f"[{timestamp}] Invoking {agent.id}...")
-            response = task_tool.invoke(agent)  # ONLY NOW IS AGENT ACTIVE
-            print(f"[{timestamp}] {agent.id} responded and is now FROZEN")
+    # Check each working pod
+    for pod in state.pods:
+        if pod.status == "working":
+            print(f"[{timestamp}] Invoking agent for {pod.id}...")
+            response = task_tool.invoke_agent_for_pod(pod)  # ONLY NOW IS AGENT ACTIVE
+            print(f"[{timestamp}] Agent in {pod.id} responded and is now FROZEN")
             
-    # Assign new work
-    for agent in idle_agents:
+    # Assign new work to idle pods
+    for pod in idle_pods:
         if has_ready_issues():
-            print(f"[{timestamp}] Sending work to {agent.id}")
-            response = task_tool.invoke(agent)  # SINGLE MESSAGE
-            agent.status = "⏸️ awaiting_invocation"
+            print(f"[{timestamp}] Assigning work to {pod.id}")
+            response = task_tool.invoke_agent_for_pod(pod)  # SINGLE MESSAGE
+            pod.status = "working"
             
     print(f"[{timestamp}] All agents now FROZEN. Waiting 30 seconds...")
     wait(30)  # NOTHING IS HAPPENING DURING THIS TIME
@@ -312,9 +310,9 @@ After EVERY Task invocation, remind yourself:
 ```yaml
 sprint_metrics:
   total_time: end - start
-  agent_utilization:
-    agent-1: time_working / total_time
-    agent-2: ...
+  pod_utilization:
+    pod-1: time_working / total_time
+    pod-2: ...
   issues_completed: count
   issues_rejected: count  
   rework_required: count
@@ -329,18 +327,18 @@ sprint_metrics:
 
 ### Agent Assignment Message (for Task tool)
 
-When spawning a new agent:
+When invoking an agent for a pod:
 ```
 Task: Implement Issue #101
-Prompt: You are agent-1. Your assignment:
+Prompt: You are an agent working in pod-1. Your assignment:
 
 Issue: #101 - Add user authentication
 Branch: feature/101-add-auth
-Worktree: ./worktrees/agent-1
+Pod: ./worktrees/pod-1
 Dependencies: None (or list completed dependencies)
 
 Instructions:
-1. cd into your worktree
+1. cd into your pod
 2. Create the branch from main
 3. Implement the issue completely
 4. Write tests
@@ -367,12 +365,12 @@ Acknowledge receipt by responding with your impact assessment.
 
 ## Decision Points Summary
 
-1. **Single vs Multi Agent**: Based on ready issues and available agents
-2. **Architectural Analysis**: Triggered for 2+ parallel agents
+1. **Single vs Multi Pod**: Based on ready issues and available pods
+2. **Architectural Analysis**: Triggered for 2+ parallel pods
 3. **Foundation Work**: Created when hidden dependencies found
 4. **Assignment Order**: Priority labels, then issue number
-5. **Worktree Creation**: Only when first assigned to agent
-6. **Review Trigger**: When all issues complete + multi-agent
+5. **Worktree Creation**: Only when creating pod
+6. **Review Trigger**: When all issues complete + multi-pod work
 7. **Error Response**: Always fail fast, alert human
 
 This is your complete operating manual. Follow these procedures exactly.

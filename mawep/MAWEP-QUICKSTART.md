@@ -14,7 +14,7 @@ Start by:
 1. Creating a mawep-workspace directory
 2. Fetching issue details with gh
 3. Building dependency graph
-4. Spawning agents for parallel work
+4. Creating pods for parallel work
 ```
 
 ## What is MAWEP?
@@ -31,8 +31,8 @@ MAWEP (Multi-Agent Workflow Execution Process) lets you coordinate multiple AI a
 ## Core Concepts
 
 1. **You** start one Claude Code session as the orchestrator
-2. **Orchestrator** spawns agents using the Task tool
-3. **Agents** work on issues in separate git worktrees
+2. **Orchestrator** creates pods and invokes agents via Task tool
+3. **Pods** are persistent git worktrees where agents work
 4. **No background work** - orchestrator continuously monitors
 5. **State tracking** in simple YAML file
 
@@ -41,17 +41,17 @@ MAWEP (Multi-Agent Workflow Execution Process) lets you coordinate multiple AI a
 The orchestrator creates `mawep-state.yaml`:
 
 ```yaml
-agents:
-  agent-1:
+pods:
+  pod-1:
     status: working
     current_issue: 101
-    worktree_path: ./worktrees/agent-1
+    worktree_path: ./worktrees/pod-1
     
 issues:
   101:
     title: "Add authentication"
     status: assigned
-    assigned_to: agent-1
+    assigned_to: pod-1
     dependencies: []
 ```
 
@@ -59,7 +59,7 @@ issues:
 
 Ask the orchestrator anytime:
 ```
-Show me the current status of all agents and issues.
+Show me the current status of all pods and issues.
 ```
 
 ## See Full Documentation

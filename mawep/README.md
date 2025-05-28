@@ -82,7 +82,7 @@ Please start by analyzing dependencies and setting up the workspace.
 The orchestrator will:
 1. 📊 **Analyze issue dependencies** - What can run in parallel?
 2. 🏗️ **Create the workspace** - Sets up `mawep-workspace/` with state tracking
-3. 🌿 **Spawn git worktrees** - Each pod gets its own isolated workspace (`pod-1`, `pod-2`, etc.)
+3. 🌿 **Create git worktrees** - Each pod gets its own isolated workspace (`pod-1`, `pod-2`, etc.)
 4. 🎯 **Assign work** - Maps issues to pods based on dependencies
 
 ### Step 3: Watch the Magic (But Stay Involved!)

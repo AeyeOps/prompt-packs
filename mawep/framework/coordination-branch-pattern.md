@@ -13,7 +13,7 @@ git checkout -b mawep/coordination
 mkdir .mawep
 touch .mawep/interfaces.ts
 touch .mawep/breaking-changes.md
-touch .mawep/agent-status.yaml
+touch .mawep/pod-status.yaml
 git add .mawep
 git commit -m "Initialize MAWEP coordination branch"
 git push -u origin mawep/coordination
@@ -25,18 +25,18 @@ git push -u origin mawep/coordination
 .mawep/
 ├── interfaces.ts       # Shared TypeScript interfaces
 ├── breaking-changes.md # Log of breaking changes
-├── agent-status.yaml   # Agent progress tracking
+├── pod-status.yaml     # Pod progress tracking
 └── contracts/          # API contracts between modules
     ├── auth-api.md
     └── user-api.md
 ```
 
-## Agent Workflow
+## Pod Workflow
 
-### 1. Each agent's worktree tracks coordination branch
+### 1. Each pod's worktree tracks coordination branch
 
 ```bash
-# In agent-1 worktree
+# In pod-1 worktree
 git remote add coord origin
 git fetch coord mawep/coordination
 git checkout -b coordination --track coord/mawep/coordination
@@ -45,11 +45,11 @@ git checkout -b coordination --track coord/mawep/coordination
 ### 2. When creating a shared interface
 
 ```bash
-# Agent-1 working on auth
-cd ./worktrees/agent-1
+# Pod-1 working on auth
+cd ./worktrees/pod-1
 git checkout coordination
 cat >> .mawep/interfaces.ts << 'EOF'
-// Added by agent-1 for issue #101
+// Added by pod-1 for issue #101
 export interface User {
   id: string;
   email: string;
@@ -57,15 +57,15 @@ export interface User {
 }
 EOF
 git add .mawep/interfaces.ts
-git commit -m "agent-1: Add User interface with role field"
+git commit -m "pod-1: Add User interface with role field"
 git push coord coordination
 git checkout feature/101-add-auth  # Back to feature branch
 ```
 
-### 3. Other agents pull changes
+### 3. Other pods pull changes
 
 ```bash
-# Agent-2 needs User interface
+# Pod-2 needs User interface
 git checkout coordination
 git pull coord coordination
 # Now can import { User } from '../.mawep/interfaces'
@@ -75,14 +75,14 @@ git checkout feature/102-permissions
 ### 4. Status updates in coordination branch
 
 ```yaml
-# .mawep/agent-status.yaml
-agent-1:
+# .mawep/pod-status.yaml
+pod-1:
   issue: 101
   status: working
   progress: "Implemented JWT, working on middleware"
   last_update: "2024-01-15T10:30:00Z"
   
-agent-2:
+pod-2:
   issue: 102
   status: blocked
   progress: "Waiting for User interface"
