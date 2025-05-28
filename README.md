@@ -98,36 +98,66 @@ Follow the orchestrator instructions in orchestrator-prompt.md
 
 ### "Where we're going, we don't need roads!" - But we do need imports!
 
-1. Clone this repository
-2. Each pack is self-contained in its directory
-3. Add the pack reference to your CLAUDE.md file (global or project)
+1. Clone or copy the desired prompt pack
+2. Place it in your Claude directory (global or project-specific)
+3. Add the pack reference to your CLAUDE.md file
 
-### Import Reference Tree
+### Setup Options (Choose Your Fighter!) 🎮
 
-Here's how the MAWEP documents reference each other (it's like a choose-your-own-adventure book!):
+#### Option 1: Global Installation (Like Installing on the C: Drive)
+```bash
+# Copy the pack to your global Claude directory
+cp -r mawep ~/.claude/prompt-packs/
+
+# Add to ~/.claude/CLAUDE.md:
+## Multi-Agent Workflows (MAWEP)
+For multi-agent parallel development workflows, see: @prompt-packs/mawep/CLAUDE.md
+```
+
+#### Option 2: Project-Specific Installation (Keep It Local, Like Your Arcade)
+```bash
+# Copy the pack to your project
+cp -r mawep /path/to/your-project/.claude/prompt-packs/
+
+# Add to /path/to/your-project/.claude/CLAUDE.md:
+## Multi-Agent Workflows (MAWEP)
+For multi-agent parallel development workflows, see: @prompt-packs/mawep/CLAUDE.md
+```
+
+### Import Reference Tree 🌳
+
+Here's how the MAWEP documents reference each other (totally modular, dude!):
 
 ```
-📁 ~/.claude/CLAUDE.md (Global)
-│   └── @~/.claude/docs/prompt-packs/mawep/CLAUDE.md
+📁 ~/.claude/CLAUDE.md (Global Setup)
+│   └── @prompt-packs/mawep/CLAUDE.md
 │
-📁 /your-project/CLAUDE.md (Project-specific)
-│   └── @~/.claude/docs/prompt-packs/mawep/CLAUDE.md
+📁 /your-project/.claude/CLAUDE.md (Project Setup)
+│   └── @prompt-packs/mawep/CLAUDE.md
 │
-📁 mawep/CLAUDE.md
-    ├── @orchestrator-prompt.md
-    ├── @agent-prompt.md
-    ├── @technical-reviewer-prompt.md
-    ├── @architect-reviewer-prompt.md
-    └── @post-mortem-analyst-prompt.md
+📁 mawep/CLAUDE.md (All references are relative!)
+    ├── @README.md
+    ├── @framework/prompts/orchestrator-prompt.md
+    ├── @framework/prompts/agent-prompt.md
+    ├── @framework/prompts/technical-reviewer-prompt.md
+    ├── @framework/prompts/architect-reviewer-prompt.md
+    └── @framework/prompts/post-mortem-analyst-prompt.md
 ```
+
+### ⚠️ Critical: Maintaining Portability (No DRM Here!)
+
+When copying prompt packs:
+1. **All @ references within the pack are relative** - they work like mixtape track listings
+2. **No absolute paths inside packs** - keeps them portable like a Walkman
+3. **The only absolute path should be in your CLAUDE.md import** - that's your directory's "Play" button
 
 ### The Magic Line ✨
 
-Add this line to your global or project CLAUDE.md to enable MAWEP:
+Add this line to your CLAUDE.md (adjust path based on where you placed it):
 
 ```markdown
 ## Multi-Agent Workflows (MAWEP)
-For multi-agent parallel development workflows, see: @~/.claude/docs/prompt-packs/mawep/CLAUDE.md
+For multi-agent parallel development workflows, see: @prompt-packs/mawep/CLAUDE.md
 ```
 
 **Don't forget the @ symbol!** It's like the flux capacitor - without it, nothing works!

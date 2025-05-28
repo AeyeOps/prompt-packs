@@ -18,3 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Example usage scenarios
 - Repository structure and documentation
 - MIT License
+- Installation guidance for both global and project-specific setups
+- CONTRIBUTING.md with portability guidelines
+- Verification that all MAWEP @ references are relative for maximum portability
