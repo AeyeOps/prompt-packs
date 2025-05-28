@@ -73,20 +73,6 @@ flowchart TD
     AgentN --> PRN[Pull Request]
 ```
 
-#### Task Tool Reality
-
-```mermaid
-%%{init: {'flowchart': {'defaultRenderer': 'elk'}}}%%
-flowchart TD
-    T1[10:00:00 - Orchestrator Invokes Agent] --> R1[10:00:05 - Agent Responds]
-    R1 --> F1[10:00:05 - Agent FREEZES]
-    F1 --> W1[10:00:05-10:00:30 - Agent is FROZEN]
-    W1 --> T2[10:00:30 - Orchestrator Must Invoke Again]
-    T2 --> R2[10:00:35 - Agent Responds]
-    R2 --> F2[10:00:35 - Agent FREEZES]
-```
-
-**Critical**: Agents do NOT work in the background. They completely freeze after each response and require continuous invocation every 30-60 seconds.
 
 #### Usage
 
