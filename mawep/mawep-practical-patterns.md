@@ -142,6 +142,36 @@ MIGRATION: Set role='user' for existing User creations
 - Use clear status messages
 - Assume you may be restarted at any time
 
+### Pattern: Reality-Based Sprint Planning
+
+**Context**: Traditional estimates assume human development speed.
+
+**Pattern**: 
+1. Estimate as if human developer
+2. Divide by 10-15 for AI execution time
+3. Add 10% buffer for integration/verification
+4. Set invocation intervals at 30-60 seconds
+
+**Example**:
+- Human estimate: 6 hours for 4 modules
+- AI reality: 6 hours ÷ 12 = 30 minutes
+- With buffer: 33 minutes total
+- Actual Sprint 3A: 31 minutes ✅
+
+### Pattern: Standalone Module Design
+
+**Context**: Pods cannot import from each other during execution.
+
+**Pattern**:
+1. Each pod creates self-contained modules
+2. Shared interfaces defined minimally upfront
+3. Dependencies resolved during integration only
+4. No cross-pod imports during development
+
+**Anti-pattern**: Pod-4 trying to import Pod-1's exceptions
+**Solution**: Pod-4 creates own base exceptions, reconciled during integration
+
+
 ## Pattern: Dependency Tracking
 
 **Problem**: Pods blocked by incomplete dependencies

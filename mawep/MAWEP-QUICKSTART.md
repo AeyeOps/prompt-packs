@@ -1,5 +1,14 @@
 # MAWEP Quick Start
 
+> ⚠️ **REALITY CHECK**: AI agents complete tasks 10-15x faster than human estimates. 
+> A "day's work" often completes in 30-45 minutes. Don't over-allocate time!
+>
+> **Quick Reference**:
+> - Module extraction: 5-10 min
+> - Complex creation: 10-15 min  
+> - 4-issue sprint: 30-45 min
+> - 8-issue sprint: 60-90 min
+
 Start MAWEP by telling Claude Code:
 
 ```

@@ -435,6 +435,30 @@ Document your analysis - don't just think it. Create written dependency maps and
 - Check measurable improvements (lines reduced, modules created, etc.)
 - Verify all modules can be imported correctly
 
+#### Sprint 3A Integration Protocol
+
+Based on empirical success:
+
+1. **Integration Order** (5-10 minutes total):
+   ```
+   Foundation modules → Dependent modules → Conflict-prone modules
+   ```
+
+2. **Rapid Integration Steps**:
+   - Copy files from pod worktrees (1-2 min)
+   - Update imports in main (2-3 min)
+   - Resolve any conflicts (1-2 min)
+   - Verify functionality (1-2 min)
+
+3. **Success Verification**:
+   ```bash
+   python -m [package] --version  # Basic functionality
+   python -m [package] --help     # CLI structure
+   python -c "import [new_modules]"  # Import testing
+   ```
+
+**Time Box**: If integration exceeds 15 minutes, something is wrong. Stop and analyze.
+
 **NEVER proceed to next sprint without completing this stage**
 
 ### Stage 6: Sprint Closure & Documentation 📝

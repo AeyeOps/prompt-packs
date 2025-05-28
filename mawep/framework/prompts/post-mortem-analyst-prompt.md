@@ -358,4 +358,39 @@ Track improvement over time:
 - Time to completion trend
 - Quality metrics trend
 
+### Time Estimation Accuracy
+
+Analyze and report:
+1. Original estimate vs actual duration
+2. Per-pod execution times with timestamps
+3. Parallel execution efficiency
+4. Integration phase duration
+5. Variance percentage and lessons learned
+
+Template:
+```
+Phase 1 (Critical): X min (Est: Y min) - Z% variance
+Phase 2 (Parallel): X min (Est: Y min) - Z% variance  
+Integration: X min (Est: Y min) - Z% variance
+Total: X min (Est: Y hours) - Z% variance
+
+Key Learning: [insight about estimation accuracy]
+```
+```
+
+---
+
+## Summary of Changes
+
+| File | Full Path | Key Addition |
+|------|-----------|--------------|
+| time-estimation.md | `~/.claude/docs/prompt-packs/mawep/framework/time-estimation.md` | AI performance benchmarks table |
+| reality-check-protocol.md | `~/.claude/reality-check-protocol.md` | AI sprint execution reality section |
+| mawep-practical-patterns.md | `~/.claude/docs/prompt-packs/mawep/mawep-practical-patterns.md` | Reality-based planning & standalone module patterns |
+| orchestrator-prompt.md | `~/.claude/docs/prompt-packs/mawep/framework/prompts/orchestrator-prompt.md` | Sprint 3A integration protocol |
+| mawep-overview.md | `~/.claude/docs/prompt-packs/mawep/mawep-overview.md` | Updated "When to Use MAWEP" |
+| MAWEP-QUICKSTART.md | `~/.claude/docs/prompt-packs/mawep/MAWEP-QUICKSTART.md` | Reality check warning box |
+| post-mortem-analyst-prompt.md | `~/.claude/docs/prompt-packs/mawep/framework/prompts/post-mortem-analyst-prompt.md` | Time estimation accuracy template |
+
+
 This completes your post-mortem analysis framework. Use data to drive continuous improvement.

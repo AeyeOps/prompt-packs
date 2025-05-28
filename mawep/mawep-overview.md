@@ -27,13 +27,18 @@ MAWEP is NOT:
 5. **Continuous Invocation** - Orchestrator invokes agents in pods every 30-60 seconds
 6. **Horizontal Scaling** - Each pod works on different issues to minimize conflicts
 
-## When to Use MAWEP
+### When to Use MAWEP
 
-Perfect for:
-- Parallel development of 3+ related GitHub issues
-- Large refactoring with clear task boundaries
-- Feature development with independent components
-- Any scenario where human developers would divide and conquer
+✅ **Use MAWEP when:**
+- Sprint can complete in < 2 hours (remember: AI is 10-15x faster)
+- Issues have clear dependency structure  
+- Modules can be designed standalone
+- Integration complexity is manageable
+
+❌ **Avoid MAWEP when:**
+- Heavy inter-module dependencies during development
+- Continuous cross-pod communication needed
+- Integration would exceed development time
 
 ## Key Insight
 
