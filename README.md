@@ -1,25 +1,50 @@
-# Prompt Packs 🎮
+# Prompt Packs
 
-*"The only winning move is to play... in parallel!"* - A collection of sophisticated prompt-based modules for Claude Code that enable advanced development patterns without requiring external infrastructure.
+A collection of sophisticated prompt-based modules for Claude Code that enable advanced development patterns without requiring external infrastructure.
 
-**Version:** 0.1.0
+**Version:** 0.2.1
 
 ## Overview
 
-Prompt Packs provides ready-to-use prompt modules that extend Claude Code's capabilities through carefully engineered prompts and workflows. Each pack is a self-contained module that leverages Claude Code's native tools to achieve complex orchestration patterns. Think of it as your DeLorean for development - no plutonium required!
+Prompt Packs provides ready-to-use prompt modules that extend Claude Code's capabilities through carefully engineered prompts and workflows. Each pack is a self-contained module that leverages Claude Code's native tools to achieve complex orchestration patterns.
 
-## Quick Start 🏃‍♂️
+## Critical Concepts
 
-**Need GitHub integration?** → Use **MAWEP**  
-**Need local-only development?** → Use **LMAWEP**  
-**Not sure?** → Start with MAWEP if you have GitHub access
+**Before you start, understand these key facts:**
+1. **No Background Work** - The Task tool executes once and stops. There are no background processes.
+2. **Continuous Orchestration Required** - You must invoke agents every 30-60 seconds or work halts completely.
+3. **Pods vs Agents** - Pods are persistent workspaces (git worktrees), agents are one-time Task tool invocations.
+4. **You Are the Engine** - Without your active orchestration, nothing happens.
+
+## Quick Start
+
+### Which Framework Should I Use?
+
+| Your Situation | Use This | Why |
+|----------------|----------|-----|
+| Working with GitHub issues | **MAWEP** | Direct GitHub integration via `gh` CLI |
+| No internet/GitHub access | **LMAWEP** | Completely local ticket system |
+| Security-sensitive project | **LMAWEP** | All data stays on your machine |
+| Open source collaboration | **MAWEP** | PR-based workflow |
+| Not sure | **MAWEP** | More common use case |
 
 ### 30-Second Setup
-1. Copy the pack: `cp -r [mawep|lmawep] ~/.claude/prompt-packs/`
-2. Add import to `~/.claude/CLAUDE.md` (see Installation section)  
-3. Start orchestrating: Use the usage examples below
+1. Copy the pack: `cp -r mawep ~/.claude/prompt-packs/` (or `lmawep` for local)
+2. Add import to `~/.claude/CLAUDE.md`:
+   ```
+   ## Multi-Agent Workflows
+   For parallel development, see: @prompt-packs/mawep/CLAUDE.md
+   ```
+3. Tell Claude Code: "Act as MAWEP Orchestrator for issues #101, #102, #103"
 
-## Prerequisites 🛠️
+### What Happens Next
+1. Claude analyzes issue dependencies
+2. Creates isolated workspaces (pods) for parallel work  
+3. You invoke agents to work in pods (every 30-60 seconds)
+4. Agents report progress, you coordinate
+5. When complete, review and merge PRs
+
+## Prerequisites
 
 ### For MAWEP (GitHub Edition)
 - Claude Code (latest version recommended)
@@ -27,41 +52,43 @@ Prompt Packs provides ready-to-use prompt modules that extend Claude Code's capa
 - GitHub CLI (`gh`) installed and authenticated 
 - Repository with issues to work on
 
-### For LMAWEP (Local Command & Control)
+### For LMAWEP (Local-Only Workflow)
 - Claude Code (latest version recommended)
 - Git (any version)
 - Local project directory
-- Basic CLI familiarity (you got this, like riding a bike!)
+- Basic CLI familiarity
 
 ## Available Packs
 
-### MAWEP - Multi-Agent Workflow Execution Process 🤖
+### MAWEP - Multi-Agent Workflow Execution Process
 
-*"I need your clothes, your boots, and your GitHub issues."* MAWEP enables parallel AI development using only Claude Code's built-in Task tool. It coordinates multiple development pods (persistent git worktrees) where AI agents work on GitHub issues simultaneously without requiring any external infrastructure. No fate but what we make!
+MAWEP enables parallel AI development using only Claude Code's built-in Task tool. It coordinates multiple development pods (persistent git worktrees) where AI agents work on GitHub issues simultaneously without requiring any external infrastructure.
 
-### LMAWEP - Local Multi-Agent Workflow Execution Process 🔒
+### LMAWEP - Local Multi-Agent Workflow Execution Process
 
-*"Keep your friends close, your code closer, and your development completely offline!"* LMAWEP brings the same powerful orchestration as MAWEP but runs entirely local - perfect for air-gapped environments, secure development, or when you want that sweet, sweet control. Think of it as your underground development bunker where agents coordinate via local tickets without ever calling home! MacGyver would be proud.
+LMAWEP brings the same powerful orchestration as MAWEP but runs entirely local - perfect for air-gapped environments, secure development, or when you need complete control over your development environment. Agents coordinate via local tickets without any external dependencies.
 
-#### What MAWEP Does (It's Got the Power!)
+#### What MAWEP Does
 
-- **Parallel Development**: Coordinate multiple AI agents working in persistent pods like you're assembling the A-Team
-- **GitHub Integration**: Direct GitHub issues and PR management - slicker than Miami Vice
-- **Dependency Management**: Automatically sequences work - smoother than Magnum P.I.'s mustache
-- **Quality Gates**: Built-in review processes tougher than the Kobra Kai dojo
-- **State Persistence**: Simple YAML-based state management (no flux capacitor required)
-- **Clean Isolation**: Each pod has its own git worktree where agents work - "Nobody puts Baby in a corner!"
+- **Parallel Development**: Coordinate multiple AI agents working in persistent pods
+- **GitHub Integration**: Direct GitHub issues and PR management
+- **Dependency Management**: Automatically sequences work based on issue dependencies
+- **Quality Gates**: Built-in review processes with architectural and technical reviews
+- **State Persistence**: Simple YAML-based state management
+- **Clean Isolation**: Each pod has its own git worktree for conflict-free parallel work
 
-#### What LMAWEP Does (Going Full Commando!)
+#### What LMAWEP Does
 
-- **100% Local Operation**: No internet required - more secure than NORAD's War Room
-- **File-Based Tickets**: YAML ticket system that's simpler than Knight Rider's controls
-- **Offline Coordination**: Agents work via local CLI - like having your own underground resistance network
-- **Air-Gap Safe**: Perfect for classified projects or when you don't trust the cloud (smart move, Ferris!)
-- **Zero Dependencies**: Just you, Claude Code, and local files - minimal as a Zen master
-- **Complete Control**: Your code never leaves your machine - Fort Knox-level security
+- **100% Local Operation**: No internet or external services required
+- **File-Based Tickets**: Simple YAML ticket system for work tracking
+- **Offline Coordination**: Agents work via local CLI tool
+- **Air-Gap Safe**: Perfect for secure or isolated development environments
+- **Zero Dependencies**: Just Claude Code and local files
+- **Complete Control**: All code and data remain on your machine
 
-#### How MAWEP Works (GitHub Style)
+#### How MAWEP Works
+
+> Note: The diagram below uses Mermaid syntax. If it doesn't render, see the text description that follows.
 
 ```mermaid
 %%{init: {'flowchart': {'defaultRenderer': 'elk'}}}%%
@@ -89,13 +116,13 @@ flowchart TD
     Review --> Merge[Merge PRs]
 ```
 
-#### Key Concepts 🔑
+#### Key Concepts
 
-- **Pods**: Persistent git worktrees where work happens (like offices that stay open)
-- **Agents**: Ephemeral Task tool invocations that work IN pods (like phone calls - they connect, deliver a message, then hang up)
+- **Pods**: Persistent git worktrees where work happens
+- **Agents**: Ephemeral Task tool invocations that work in pods
 - **Orchestrator**: You, managing pods and continuously invoking agents to keep work moving
 
-Remember: Agents are temporary workers summoned to work in persistent pod workspaces!
+**Critical Understanding**: Agents are stateless and stop after each invocation. The orchestrator must continuously invoke agents every 30-60 seconds or work stops completely. Pods provide the persistent workspace and context.
 
 #### Architecture
 
@@ -121,7 +148,7 @@ flowchart TD
     PodN --> PRN[Pull Request]
 ```
 
-#### How LMAWEP Works (Local Command & Control)
+#### How LMAWEP Works
 
 ```mermaid
 %%{init: {'flowchart': {'defaultRenderer': 'elk'}}}%%
@@ -150,7 +177,7 @@ flowchart TD
 ```
 
 
-#### MAWEP Usage (The GitHub Connection)
+#### MAWEP Usage
 
 To start MAWEP orchestration:
 
@@ -163,45 +190,43 @@ Issues: #101, #102, #103, #104
 Follow the orchestrator instructions in orchestrator-prompt.md
 ```
 
-#### LMAWEP Usage (Going Dark)
+#### LMAWEP Usage
 
 To start LMAWEP orchestration:
 
 ```
 I want you to act as the LMAWEP Orchestrator for parallel local development.
 
-Project: /path/to/your-awesome-project
+Project: /path/to/your-project
 Tickets: 101, 102, 103, 104
 
 Follow the orchestrator instructions in lmawep/framework/prompts/orchestrator-prompt.md
 ```
 
-#### When to Use MAWEP 📼
+#### When to Use MAWEP
 
-- Working with **GitHub repositories** (when you're part of the connected world)
-- Implementing 3+ related GitHub issues (like collecting all the Infinity Stones)
-- Team development with PR reviews (assembling the A-Team online)
-- Open source projects or collaborative workflows (sharing is caring!)
+- Working with GitHub repositories
+- Implementing 3+ related GitHub issues
+- Team development with PR reviews
+- Open source projects or collaborative workflows
 
-#### When to Use LMAWEP 🔐
+#### When to Use LMAWEP
 
-- **Air-gapped development** environments (when even KITT can't phone home)
-- Security-sensitive projects (more classified than WarGames)
-- Offline development sprints (no WiFi, no problem!)
-- Local prototyping and experimentation (your own private arcade)
-- Any scenario where code must stay local (Fort Knox-level security)
+- Air-gapped development environments
+- Security-sensitive projects
+- Offline development sprints
+- Local prototyping and experimentation
+- Any scenario where code must stay local
 
-## Installation & Setup 🚀
-
-### "Where we're going, we don't need roads!" - But we do need imports!
+## Installation & Setup
 
 1. Clone or copy the desired prompt pack
 2. Place it in your Claude directory (global or project-specific)
 3. Add the pack reference to your CLAUDE.md file
 
-### Setup Options (Choose Your Fighter!) 🎮
+### Setup Options
 
-#### Option 1: Global Installation (Like Installing on the C: Drive)
+#### Option 1: Global Installation
 ```bash
 # Copy both packs to your global Claude directory
 cp -r mawep ~/.claude/prompt-packs/
@@ -215,7 +240,7 @@ For GitHub-integrated parallel development workflows, see: @prompt-packs/mawep/C
 For local-only parallel development workflows, see: @prompt-packs/lmawep/CLAUDE.md
 ```
 
-#### Option 2: Project-Specific Installation (Keep It Local, Like Your Arcade)
+#### Option 2: Project-Specific Installation
 ```bash
 # Copy both packs to your project (or just the one you need!)
 cp -r mawep /path/to/your-project/.claude/prompt-packs/
@@ -229,9 +254,9 @@ For GitHub-integrated parallel development workflows, see: @prompt-packs/mawep/C
 For local-only parallel development workflows, see: @prompt-packs/lmawep/CLAUDE.md
 ```
 
-### Import Reference Tree 🌳
+### Import Reference Tree
 
-Here's how both frameworks organize their documents (totally modular, dude!):
+Here's how both frameworks organize their documents:
 
 ```
 📁 ~/.claude/CLAUDE.md (Global Setup)
@@ -260,16 +285,16 @@ Here's how both frameworks organize their documents (totally modular, dude!):
 │   └── @lmawep (CLI executable for ticket management)
 ```
 
-### ⚠️ Critical: Maintaining Portability (No DRM Here!)
+### Critical: Maintaining Portability
 
 When copying prompt packs:
-1. **All @ references within the pack are relative** - they work like mixtape track listings
-2. **No absolute paths inside packs** - keeps them portable like a Walkman
-3. **The only absolute path should be in your CLAUDE.md import** - that's your directory's "Play" button
+1. **All @ references within the pack are relative** - ensures portability
+2. **No absolute paths inside packs** - keeps them location-independent
+3. **The only absolute path should be in your CLAUDE.md import** - for your specific setup
 
-### The Magic Lines ✨
+### Required CLAUDE.md Lines
 
-Add these lines to your CLAUDE.md (choose the one you need, or use both for maximum power!):
+Add these lines to your CLAUDE.md:
 
 ```markdown
 ## Multi-Agent Workflows (MAWEP - GitHub Edition)
@@ -279,13 +304,27 @@ For GitHub-integrated parallel development workflows, see: @prompt-packs/mawep/C
 For local-only parallel development workflows, see: @prompt-packs/lmawep/CLAUDE.md
 ```
 
-**Don't forget the @ symbol!** It's like the flux capacitor - without it, nothing works!
+**Note**: The @ symbol is required for proper import resolution.
+
+## Common Misconceptions
+
+### ❌ "I'll spawn agents and they'll work in the background"
+**Reality**: Agents execute once per invocation and stop. Nothing happens between invocations.
+
+### ❌ "The framework automates everything"
+**Reality**: You must actively orchestrate. The framework provides structure, not automation.
+
+### ❌ "Agents can coordinate with each other"
+**Reality**: All coordination goes through you, the orchestrator. Agents cannot communicate directly.
+
+### ❌ "I can set it up and walk away"
+**Reality**: Continuous attention required. Think of it as conducting an orchestra, not launching a rocket.
 
 ## Repository Structure
 
 ```
 prompt-packs/
-├── README.md           # This file - your guide to the galaxy
+├── README.md           # This file
 ├── CHANGELOG.md        # Version history
 ├── LICENSE             # MIT License
 ├── mawep/              # MAWEP pack (GitHub edition)
@@ -306,18 +345,26 @@ prompt-packs/
     └── ...
 ```
 
-## Contributing 🕹️
+## Contributing
 
-*"Be excellent to each other!"* When adding new prompt packs:
-1. Create a new directory for your pack (name it like an 80s band)
-2. Include comprehensive documentation (no instruction manual? Bogus!)
-3. Provide example usage scenarios (show us the moves)
-4. Update this README.md (keep the legend alive)
+When adding new prompt packs:
+1. Create a new directory for your pack
+2. Include comprehensive documentation
+3. Provide example usage scenarios
+4. Update this README.md
 
-## License 📺
+## License
 
-MIT License - see LICENSE file for details. *"It's dangerous to go alone! Take this!"*
+MIT License - see LICENSE file for details.
 
-## Version History 🎬
+## Version History
 
-See CHANGELOG.md for detailed version history. Like tracking John McClane through all the Die Hard movies!
+See CHANGELOG.md for detailed version history.
+
+## Getting Help
+
+- **Framework Issues**: Check the individual pack documentation first
+- **Conceptual Questions**: Review the "Common Misconceptions" section above
+- **Bug Reports**: Open an issue with specific details about what went wrong
+
+Remember: Success with these frameworks requires understanding that you're the orchestrator, not a passenger. The frameworks provide structure and patterns, but you provide the continuous coordination that makes parallel development possible.

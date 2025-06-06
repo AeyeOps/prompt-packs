@@ -1,24 +1,24 @@
-# LMAWEP Framework 🎯
+# LMAWEP Framework
 
-**L**ocal **M**ulti-**A**gent **W**orkflow **E**xecution **P**rocess - Like having a killer development crew that doesn't step on each other's code, all working locally! 
+**L**ocal **M**ulti-**A**gent **W**orkflow **E**xecution **P**rocess - Coordinate multiple AI agents working on local tickets in parallel using isolated workspaces.
 
-*Coordinate agents working in persistent pod workspaces on local tickets in parallel while keeping your sanity intact.*
+*A framework for orchestrating parallel development with persistent pod workspaces and ephemeral agents.*
 
 ---
 
-## 🚀 What's This All About?
+## Overview
 
-Ever wanted to split up a big development sprint and have multiple AI agents tackle different pieces simultaneously, all working locally without any remote dependencies? LMAWEP makes it happen without the chaos. Think of it as **your project's local mission control** - one orchestrator invokes agents who work in dedicated pods (persistent git worktrees) so they never lose context or step on each other.
+LMAWEP enables parallel development by coordinating multiple AI agents working on different tickets simultaneously. The framework provides local mission control where an orchestrator manages agents working in isolated pods (persistent git worktrees) to maintain context and prevent conflicts.
 
-**Perfect for:**
-- 🔥 Sprint work with 3-10 independent tickets
-- 🎯 Module extraction and refactoring  
-- ⚡ Parallel feature development
-- 🏗️ Large-scale code organization
-- 🔒 Local-only development environments
-- 🛡️ Air-gapped or secure environments
+**Use Cases:**
+- Sprint work with 3-10 independent tickets
+- Module extraction and refactoring  
+- Parallel feature development
+- Large-scale code organization
+- Local-only development environments
+- Air-gapped or secure environments
 
-## ⚠️ Reality Check First!
+## Prerequisites and Limitations
 
 **LMAWEP isn't magic** - it's coordination. Before diving in:
 - ✅ Use for **independent tasks** that can work in parallel
@@ -28,7 +28,7 @@ Ever wanted to split up a big development sprint and have multiple AI agents tac
 - ✅ Great for local development without remote dependencies
 - ❌ Not needed if you require GitHub integration
 
-## 🎮 How It Works (The Flow)
+## How It Works
 
 ### The Complete Architecture
 ```
@@ -65,15 +65,15 @@ Ever wanted to split up a big development sprint and have multiple AI agents tac
     └─────────────────────────────────────────────┘
 ```
 
-### Key Terminology (No Confusion Zone!)
-- **🎭 Agent**: Ephemeral Claude Task execution (single message → response → *poof* gone)
-- **🏠 Pod**: Persistent git worktree + memory bank where agents work over time
-- **🎯 Orchestrator**: You - the conductor invoking agents and tracking state
-- **🎫 Ticket**: Local YAML-based work item (replaces GitHub issues)
+### Key Terminology
+- **Agent**: Ephemeral Claude Task execution (single message → response → completes)
+- **Pod**: Persistent git worktree + memory bank where agents work over time
+- **Orchestrator**: You - the conductor invoking agents and tracking state
+- **Ticket**: Local YAML-based work item (replaces GitHub issues)
 
 **Critical Reality**: Agents are like phone calls - they start, do one thing, then hang up. Pods are like offices - they persist and hold all the work context.
 
-## 🛠️ Getting Started (Your First Mission)
+## Getting Started
 
 ### Step 1: Launch the Orchestrator
 Tell Claude Code:
@@ -100,7 +100,7 @@ The orchestrator will:
 
 ---
 
-## 🔧 Local Ticket System Deep Dive
+## Local Ticket System
 
 LMAWEP uses a simple file-based ticket system instead of GitHub issues:
 
@@ -146,9 +146,9 @@ blockers: []
 ./lmawep ticket depend 102 101  # 102 depends on 101
 ```
 
-## 🔧 Git Worktree Deep Dive (The Technical Stuff)
+## Git Worktree Architecture
 
-### Pod Creation (What LMAWEP Does Automatically)
+### Pod Creation Process
 ```bash
 # For each pod, LMAWEP runs:
 git worktree add lmawep-workspace/worktrees/pod-1 -b pod-1-ticket-101
@@ -165,7 +165,7 @@ your-project/
 └── [main project files]  ← Your original main branch
 ```
 
-### Pod Management Commands (For Manual Control)
+### Pod Management Commands
 ```bash
 # Check all active pods
 git worktree list
@@ -202,7 +202,7 @@ cd ../pod-2
 git status  # Shows only pod-2 changes
 ```
 
-### Memory Bank Pattern (Context Persistence)
+### Memory Bank Pattern
 ```
 pod-1/memory-bank/
 ├── activeContext.md    # "Working on extracting logging module from __main__.py"
@@ -215,7 +215,7 @@ pod-1/memory-bank/
 
 ---
 
-## 📁 Complete Project Structure
+## Project Structure
 
 ```
 your-project/
@@ -240,9 +240,9 @@ your-project/
 └── [your regular project files] # Main branch (untouched during work)
 ```
 
-## 🎯 Success Patterns
+## Success Patterns
 
-### 📢 Pod Status Communication
+### Pod Status Communication
 When agents work in pods, they report in this format:
 ```
 STATUS: working|complete|blocked|needs-review
@@ -251,7 +251,7 @@ BLOCKERS: None
 NEXT: Waiting for manual review, then working on config module
 ```
 
-### 🔔 Breaking Change Alerts
+### Breaking Change Alerts
 When one pod changes something others need:
 ```
 🚨 BREAKING CHANGE ALERT
@@ -262,7 +262,7 @@ AFFECTS: Any code creating User objects
 MIGRATION: Set role='user' for existing records
 ```
 
-### 🔄 Pod Lifecycle Management
+### Pod Lifecycle Management
 ```bash
 # Typical pod lifecycle:
 1. git worktree add worktrees/pod-1 -b pod-1-ticket-101
@@ -273,7 +273,7 @@ MIGRATION: Set role='user' for existing records
 6. git branch -d pod-1-ticket-101
 ```
 
-## 🎸 Advanced Moves
+## Advanced Patterns
 
 ### Coordination Branch Pattern
 For shared interfaces and breaking changes:
@@ -303,7 +303,7 @@ git worktree add worktrees/pod-1 -b pod-1-ticket-101  # Start fresh
 - **Network**: No network required (fully local)
 - **IDE**: Open multiple VS Code windows, one per pod
 
-## 🚫 What Not To Do (Learn from Others' Pain)
+## Common Pitfalls
 
 ❌ **Don't assume agents work continuously** - They stop after each response  
 ❌ **Don't have pods modify each other's files** - Stay in your lane!  
@@ -312,7 +312,7 @@ git worktree add worktrees/pod-1 -b pod-1-ticket-101  # Start fresh
 ❌ **Don't use for tightly coupled work** - Sequential is sometimes better  
 ❌ **Don't forget to clean up** - Remove completed pods to save disk space
 
-## 🔍 When Things Go Sideways
+## Troubleshooting
 
 ### Pod Stuck or Confused?
 ```bash
@@ -340,14 +340,14 @@ git worktree add worktrees/pod-1 -b pod-1-ticket-101  # Start fresh
 - Look at each `pod-N/memory-bank/progress.md` for status
 - Use `./lmawep ticket list` to see all tickets
 
-## 🎊 Ready to Rock?
+## Implementation Checklist
 
 LMAWEP works best when you:
-- 🎯 **Have clear, independent tickets** (3+ tickets ideal)
-- 🏗️ **Need parallel development** (sprint work, refactoring)
-- 🎮 **Want to stay in control** (orchestrator = you)
-- 💪 **Have separated concerns** (minimal cross-dependencies)
-- 🔒 **Need local-only development** (no remote dependencies)
+- **Have clear, independent tickets** (3+ tickets ideal)
+- **Need parallel development** (sprint work, refactoring)
+- **Want to stay in control** (orchestrator = you)
+- **Have separated concerns** (minimal cross-dependencies)
+- **Need local-only development** (no remote dependencies)
 
 **Start small**, get comfortable with 2-3 pods, then scale up as you learn the rhythm!
 
@@ -360,6 +360,5 @@ LMAWEP works best when you:
 
 ---
 
-*Like a well-oiled 80s synth setup - each track (pod) plays its part while the producer (orchestrator) keeps the whole album (project) in perfect harmony.* 🎵✨
 
 **Need the complete prompt library?** This README just scratches the surface - check out the full framework documentation for orchestrator prompts, agent instructions, post-mortem analysis patterns, and advanced coordination strategies!

@@ -1,6 +1,6 @@
-# Contributing to Prompt Packs 🚀
+# Contributing to Prompt Packs
 
-*"The code must be strong!"* - Guidelines for creating awesome, portable prompt packs.
+Guidelines for creating portable prompt packs.
 
 ## Creating a New Prompt Pack
 
@@ -12,7 +12,7 @@ your-pack/
 └── [your-files]/       # Additional files as needed
 ```
 
-### 2. Portability Rules (Keep It Mobile Like a Boom Box!) 📻
+### 2. Portability Rules
 
 #### ✅ DO:
 - **Use relative @ references within your pack**
@@ -77,7 +77,7 @@ Each pack must include:
 ### 5. Naming Conventions
 
 - Pack names should be lowercase with hyphens: `awesome-pack`
-- Be descriptive but concise (like band names: "def-leppard" not "definitively-leopard-print")
+- Be descriptive but concise
 - Avoid generic names like "utils" or "helpers"
 
 ### 6. Version Updates
@@ -99,7 +99,7 @@ Before submitting your PR, verify:
 - [ ] CLAUDE.md serves as proper entry point
 - [ ] Example usage is provided
 - [ ] No user-specific or system-specific content
-- [ ] Pack is self-contained (like a cartridge!)
+- [ ] Pack is self-contained
 
 ## Example: Creating a "Code Review Pack"
 
@@ -130,6 +130,4 @@ See @examples/usage.md for detailed examples.
 
 ## Questions?
 
-If you're unsure about something, just ask! Open an issue and we'll help you make your pack totally rad! 🎸
-
-Remember: *"With great prompts comes great responsibility!"*
+If you're unsure about something, just ask! Open an issue and we'll help you improve your pack.
