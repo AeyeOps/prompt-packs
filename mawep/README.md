@@ -1,22 +1,22 @@
-# MAWEP Framework 🎯
+# MAWEP Framework
 
-**M**ulti-**A**gent **W**orkflow **E**xecution **P**rocess - Like having a killer development crew that doesn't step on each other's code! 
+**M**ulti-**A**gent **W**orkflow **E**xecution **P**rocess - Coordinate multiple AI agents working on GitHub issues in parallel using isolated workspaces.
 
-*Coordinate agents working in persistent pod workspaces on GitHub issues in parallel while keeping your sanity intact.*
+*A framework for orchestrating parallel development with persistent pod workspaces and ephemeral agents.*
 
 ---
 
-## 🚀 What's This All About?
+## Overview
 
-Ever wanted to split up a big development sprint and have multiple AI agents tackle different pieces simultaneously? MAWEP makes it happen without the chaos. Think of it as **your project's mission control** - one orchestrator invokes agents who work in dedicated pods (persistent git worktrees) so they never lose context or step on each other.
+MAWEP enables parallel development by coordinating multiple AI agents working on different issues simultaneously. The framework provides mission control where an orchestrator manages agents working in isolated pods (persistent git worktrees) to maintain context and prevent conflicts.
 
-**Perfect for:**
-- 🔥 Sprint work with 3-10 independent issues
-- 🎯 Module extraction and refactoring
-- ⚡ Parallel feature development
-- 🏗️ Large-scale code organization
+**Use Cases:**
+- Sprint work with 3-10 independent issues
+- Module extraction and refactoring
+- Parallel feature development
+- Large-scale code organization
 
-## ⚠️ Reality Check First!
+## Prerequisites and Limitations
 
 **MAWEP isn't magic** - it's coordination. Before diving in:
 - ✅ Use for **independent tasks** that can work in parallel
@@ -24,7 +24,7 @@ Ever wanted to split up a big development sprint and have multiple AI agents tac
 - ✅ Perfect when you have clear issue separation  
 - ❌ Overkill for single issues or quick fixes
 
-## 🎮 How It Works (The Flow)
+## How It Works
 
 ### The Complete Architecture
 ```
@@ -58,14 +58,14 @@ Ever wanted to split up a big development sprint and have multiple AI agents tac
     └─────────────────────────────────────────────┘
 ```
 
-### Key Terminology (No Confusion Zone!)
-- **🎭 Agent**: Ephemeral Claude Task execution (single message → response → *poof* gone)
-- **🏠 Pod**: Persistent git worktree + memory bank where agents work over time
-- **🎯 Orchestrator**: You - the conductor invoking agents and tracking state
+### Key Terminology
+- **Agent**: Ephemeral Claude Task execution (single message → response → completes)
+- **Pod**: Persistent git worktree + memory bank where agents work over time
+- **Orchestrator**: You - the conductor invoking agents and tracking state
 
 **Critical Reality**: Agents are like phone calls - they start, do one thing, then hang up. Pods are like offices - they persist and hold all the work context.
 
-## 🛠️ Getting Started (Your First Mission)
+## Getting Started
 
 ### Step 1: Launch the Orchestrator
 Tell Claude Code:
@@ -85,18 +85,16 @@ The orchestrator will:
 3. 🌿 **Create git worktrees** - Each pod gets its own isolated workspace (`pod-1`, `pod-2`, etc.)
 4. 🎯 **Assign work** - Maps issues to pods based on dependencies
 
-### Step 3: Watch the Magic (But Stay Involved!)
-- 📺 **Monitor progress**: Ask "Show status" anytime
-- 🔄 **Keep it flowing**: Orchestrator handles continuous agent invocation for each pod
-- 🚨 **Handle blockers**: Jump in when pods report issues
+### Step 3: Monitor and Coordinate
+- **Monitor progress**: Ask "Show status" anytime
+- **Keep it flowing**: Orchestrator handles continuous agent invocation for each pod
+- **Handle blockers**: Jump in when pods report issues
 
 ---
 
-## 🔧 Git Worktree Deep Dive (The Technical Stuff)
+## Git Worktree Architecture
 
-Now that you know WHY, here's HOW it actually works under the hood.
-
-### Pod Creation (What MAWEP Does Automatically)
+### Pod Creation Process
 ```bash
 # For each pod, MAWEP runs:
 git worktree add mawep-workspace/worktrees/pod-1 -b pod-1-issue-101
@@ -113,7 +111,7 @@ your-project/
 └── [main project files]  ← Your original main branch
 ```
 
-### Pod Management Commands (For Manual Control)
+### Pod Management Commands
 ```bash
 # Check all active pods
 git worktree list
@@ -150,7 +148,7 @@ cd ../pod-2
 git status  # Shows only pod-2 changes
 ```
 
-### Memory Bank Pattern (Context Persistence)
+### Memory Bank Pattern
 ```
 pod-1/memory-bank/
 ├── activeContext.md    # "Working on extracting logging module from __main__.py"
@@ -163,7 +161,7 @@ pod-1/memory-bank/
 
 ---
 
-## 📁 Complete Project Structure
+## Project Structure
 
 ```
 your-project/
@@ -181,9 +179,9 @@ your-project/
 └── [your regular project files] # Main branch (untouched during work)
 ```
 
-## 🎯 Success Patterns
+## Success Patterns
 
-### 📢 Pod Status Communication
+### Pod Status Communication
 When agents work in pods, they report in this format:
 ```
 STATUS: working|complete|blocked|needs-review
@@ -192,7 +190,7 @@ BLOCKERS: None
 NEXT: Waiting for PR review, then working on config module
 ```
 
-### 🔔 Breaking Change Alerts
+### Breaking Change Alerts
 When one pod changes something others need:
 ```
 🚨 BREAKING CHANGE ALERT
@@ -203,7 +201,7 @@ AFFECTS: Any code creating User objects
 MIGRATION: Set role='user' for existing records
 ```
 
-### 🔄 Pod Lifecycle Management
+### Pod Lifecycle Management
 ```bash
 # Typical pod lifecycle:
 1. git worktree add worktrees/pod-1 -b pod-1-issue-101
@@ -214,7 +212,7 @@ MIGRATION: Set role='user' for existing records
 6. git branch -d pod-1-issue-101
 ```
 
-## 🎸 Advanced Moves
+## Advanced Patterns
 
 ### Coordination Branch Pattern
 For shared interfaces and breaking changes:
@@ -244,7 +242,7 @@ git worktree add worktrees/pod-1 -b pod-1-issue-101  # Start fresh
 - **Network**: Each pod can `git push` independently
 - **IDE**: Open multiple VS Code windows, one per pod
 
-## 🚫 What Not To Do (Learn from Others' Pain)
+## Common Pitfalls
 
 ❌ **Don't assume agents work continuously** - They stop after each response  
 ❌ **Don't have pods modify each other's files** - Stay in your lane!  
@@ -253,7 +251,7 @@ git worktree add worktrees/pod-1 -b pod-1-issue-101  # Start fresh
 ❌ **Don't use for tightly coupled work** - Sequential is sometimes better  
 ❌ **Don't forget to clean up** - Remove completed pods to save disk space
 
-## 🔍 When Things Go Sideways
+## Troubleshooting
 
 ### Pod Stuck or Confused?
 ```bash
@@ -280,13 +278,13 @@ git worktree add worktrees/pod-1 -b pod-1-issue-101  # Start fresh
 - Run `git worktree list` - see all active pods
 - Look at each `pod-N/memory-bank/progress.md` for status
 
-## 🎊 Ready to Rock?
+## Implementation Checklist
 
 MAWEP works best when you:
-- 🎯 **Have clear, independent issues** (3+ issues ideal)
-- 🏗️ **Need parallel development** (sprint work, refactoring)
-- 🎮 **Want to stay in control** (orchestrator = you)
-- 💪 **Have separated concerns** (minimal cross-dependencies)
+- **Have clear, independent issues** (3+ issues ideal)
+- **Need parallel development** (sprint work, refactoring)
+- **Want to stay in control** (orchestrator = you)
+- **Have separated concerns** (minimal cross-dependencies)
 
 **Start small**, get comfortable with 2-3 pods, then scale up as you learn the rhythm!
 
@@ -299,6 +297,5 @@ MAWEP works best when you:
 
 ---
 
-*Like a well-oiled 80s synth setup - each track (pod) plays its part while the producer (orchestrator) keeps the whole album (project) in perfect harmony.* 🎵✨
 
 **Need the complete prompt library?** This README just scratches the surface - check out the full framework documentation for orchestrator prompts, agent instructions, post-mortem analysis patterns, and advanced coordination strategies!

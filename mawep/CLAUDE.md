@@ -149,10 +149,10 @@ git branch -d pod-1-issue-101
 - [ ] Clean up completed pod worktrees
 - [ ] Document lessons learned
 
-## 🎵 Ready to Rock?
+## Getting Started
 
 **Start with**: @README.md for user-friendly introduction
 **Then use**: @framework/prompts/orchestrator-prompt.md for implementation
 **Reference**: Other prompts and guides as needed during execution
 
-Remember: MAWEP is about orchestration, not automation. You're the conductor - stay engaged! 🎸✨
+Remember: MAWEP is about orchestration, not automation. You're the conductor - stay engaged!
